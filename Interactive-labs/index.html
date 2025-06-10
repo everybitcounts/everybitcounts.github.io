@@ -1,3 +1,16 @@
+Absolutely! Here’s how to achieve what you want:
+
+1. **Keep Workstation Text White:**  
+Add `color: #fff;` to `.aws-vpc-workspace h3`.
+
+2. **Expand Editor/Terminal when Instructions are Hidden:**  
+You need to make the following changes:
+- When instructions are hidden, the `.aws-vpc-main-content` should switch to a single-column layout and the `.aws-vpc-editor-terminal` should fill the available height and width.
+- The `.aws-vpc-editor-section` and `.aws-vpc-terminal-section` (and their `<textarea>`) should stretch to fill all available space.
+
+Below is the improved code. The key is the `.full` class and flexbox with `min-height: 0; height: 100%;` on each flex child.
+
+```html name=index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -156,7 +169,7 @@ dialog::backdrop {
   display: none;
 }
 .aws-vpc-editor-terminal {
-  flex: 1;
+  flex: 1 1 0%;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -171,8 +184,24 @@ dialog::backdrop {
   padding: 10px;
   margin-bottom: 10px;
 }
+.aws-vpc-workspace h3 {
+  font-size: 0.9rem;
+  color: #fff; /* Always white */
+  margin-bottom: 10px;
+}
+.aws-vpc-file-tree ul {
+  list-style: none;
+  padding-left: 15px;
+}
+.aws-vpc-file-tree li {
+  margin: 5px 0;
+}
+.aws-vpc-file-tree li.file {
+  color: #00ffd5;
+  cursor: pointer;
+}
 .aws-vpc-editor-section, .aws-vpc-terminal-section {
-  flex: 1;
+  flex: 1 1 0%;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -185,7 +214,7 @@ dialog::backdrop {
   border-bottom: 1px solid rgba(0,255,200,0.2);
 }
 .aws-vpc-editor, .aws-vpc-terminal {
-  flex: 1;
+  flex: 1 1 0%;
   background: #2a2a3e;
   border: 1px solid rgba(0,255,200,0.2);
   border-radius: 4px;
@@ -195,21 +224,14 @@ dialog::backdrop {
   color: #fff;
   resize: none;
   min-height: 0;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 }
 .aws-vpc-terminal {
   background: #1a1a2e;
   color: #00ffd5;
-}
-.aws-vpc-file-tree ul {
-  list-style: none;
-  padding-left: 15px;
-}
-.aws-vpc-file-tree li {
-  margin: 5px 0;
-}
-.aws-vpc-file-tree li.file {
-  color: #00ffd5;
-  cursor: pointer;
 }
 .aws-vpc-button-group {
   display: flex;
@@ -268,13 +290,6 @@ dialog::backdrop {
   }
 }
 /* KEY: Expand editor-terminal to full width/height when instructions hidden */
-.aws-vpc-main-content.full .aws-vpc-editor-terminal {
-  flex: 1 1 100%;
-  width: 100%;
-  min-width: 0;
-  min-height: 0;
-  height: 100%;
-}
 .aws-vpc-main-content.full {
   flex-direction: column;
   gap: 0;
@@ -283,226 +298,4 @@ dialog::backdrop {
 .aws-vpc-main-content.full .aws-vpc-instructions {
   display: none !important;
 }
-</style>
-</head>
-<body>
-<button class="theme-toggle" onclick="toggleTheme()">Light Mode</button>
-
-<div class="article-container" id="article">
-<div class="section" style="text-align: center; padding-top: 100px;">
-<h1 style="
-font-size: 2.4rem;
-background: linear-gradient(to right, #00ffd5, #00aaff);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-margin-bottom: 10px;">
-Terraform Academy
-Interactive Labs
-</h1>
-<p style="opacity: 0.8; font-size: 1.1rem;">
-Hands-On | Cloud-Based
-</p>
-</div>
-
-<!-- Modal Trigger Buttons for AWS Labs -->
-<button class="modal-button" onclick="openModal('aws-vpc-modal')"><span class="title-gradient">AWS VPC Lab</span>: Create a VPC in AWS</button>
-<!-- (... other modal buttons unchanged ...) -->
-
-<!-- AWS VPC LAB MODAL -->
-<dialog id="aws-vpc-modal">
-  <div class="lab-content">
-    <div class="aws-vpc-lab-container">
-      <div class="aws-vpc-header">
-        <h1>AWS VPC Lab</h1>
-        <button type="button" onclick="toggleInstructionsVpc()">Hide Instructions</button>
-        <button type="button" onclick="closeModal('aws-vpc-modal')">Close</button>
-      </div>
-      <div class="aws-vpc-main-content" id="aws-vpc-main-content">
-        <div class="aws-vpc-instructions" id="aws-vpc-instructions">
-          <h2>Create a VPC in AWS</h2>
-          <p>In the "Code Editor" tab, open the <code>vpc.tf</code> file.</p>
-          <p>Your task: Add resources to create a VPC with a CIDR block of <code>10.0.0.0/16</code>, a subnet with a CIDR block of <code>10.0.1.0/24</code>, an internet gateway attached to the VPC, a route table with a route to the internet gateway, and an association between the subnet and the route table.</p>
-        </div>
-        <div class="aws-vpc-editor-terminal">
-          <div class="aws-vpc-workspace">
-            <h3>WORKSTATION</h3>
-            <div class="aws-vpc-file-tree">
-              <ul>
-                <li>📁 /root/learn-terraform-aws-vpc</li>
-                <ul>
-                  <li class="file" onclick="loadVpcFile('provider.tf')">📄 provider.tf</li>
-                  <li class="file" onclick="loadVpcFile('vpc.tf')">📄 vpc.tf</li>
-                </ul>
-              </ul>
-            </div>
-          </div>
-          <div class="aws-vpc-editor-section">
-            <h3>Code Editor</h3>
-            <textarea id="aws-vpc-editor" spellcheck="false"></textarea>
-          </div>
-          <div class="aws-vpc-terminal-section">
-            <h3>Terminal</h3>
-            <textarea id="aws-vpc-terminal" readonly>
-Initializing lab environment...
-Terraform initialized successfully.
-            </textarea>
-          </div>
-        </div>
-      </div>
-      <div class="aws-vpc-button-group">
-        <button class="aws-vpc-check-btn" onclick="checkVpcCode()">Check</button>
-        <button class="aws-vpc-clear-btn" onclick="clearVpcTerminal()">Clear Terminal</button>
-        <button class="aws-vpc-check-answer-btn" onclick="showVpcSolution()">Check Answer</button>
-        <button class="aws-vpc-restart-btn" onclick="restartVpcLab()">Restart</button>
-      </div>
-    </div>
-  </div>
-</dialog>
-
-<!-- (Other modals remain as placeholders for now) -->
-
-</div>
-<script>
-const article = document.getElementById('article');
-window.addEventListener('scroll', () => {
-  const scrollY = window.scrollY;
-  article.style.transform = `translateZ(${scrollY / -10}px)`;
-});
-
-function toggleTheme() {
-  document.body.classList.toggle('light');
-  const btn = document.querySelector(".theme-toggle");
-  btn.textContent = document.body.classList.contains("light") ? "Dark Mode" : "Light Mode";
-}
-
-function openModal(modalId) {
-  const modal = document.getElementById(modalId);
-  modal.showModal();
-  document.body.style.overflow = 'hidden';
-  document.body.addEventListener('touchmove', preventScroll, { passive: false });
-
-  // If opening the VPC lab, always restart state
-  if (modalId === 'aws-vpc-modal') restartVpcLab();
-}
-
-function closeModal(modalId) {
-  const modal = document.getElementById(modalId);
-  modal.close();
-  document.body.style.overflow = 'auto';
-  document.body.removeEventListener('touchmove', preventScroll);
-}
-
-function preventScroll(event) {
-  event.preventDefault();
-}
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') {
-    document.querySelectorAll('dialog[open]').forEach(modal => {
-      modal.close();
-      document.body.style.overflow = 'auto';
-      document.body.removeEventListener('touchmove', preventScroll);
-    });
-  }
-});
-
-/* ----------- VPC Lab State (independent) ----------- */
-const vpcInitialFiles = {
-  'provider.tf': `provider "aws" {
-  region = "us-east-1"
-}`,
-  'vpc.tf': `# Define your VPC resources here
-`
-};
-let vpcFiles = {};
-let vpcCurrentFile = 'provider.tf';
-function loadVpcFile(filename) {
-  vpcCurrentFile = filename;
-  document.getElementById('aws-vpc-editor').value = vpcFiles[filename];
-  document.getElementById('aws-vpc-editor').dataset.file = filename;
-}
-function checkVpcCode() {
-  const editor = document.getElementById('aws-vpc-editor');
-  const terminal = document.getElementById('aws-vpc-terminal');
-  let code = editor.value.trim();
-  let filename = editor.dataset.file;
-  let terminalOutput = terminal.value + '\n\nChecking your code...\n';
-  if (filename !== 'vpc.tf') {
-    terminalOutput += 'Error: Please edit vpc.tf to add the required resources.';
-  } else if (
-    code.includes('aws_vpc') && code.includes('aws_subnet') && code.includes('aws_internet_gateway')
-    && code.includes('aws_route_table') && code.includes('aws_route_table_association')
-    && code.includes('10.0.0.0/16') && code.includes('10.0.1.0/24') && code.includes('0.0.0.0/0')
-  ) {
-    terminalOutput += 'Success! Your Terraform code is correct.\nApplying configuration...\nVPC created successfully.';
-  } else {
-    terminalOutput += 'Error: Incomplete or missing resources/CIDRs for the VPC lab.';
-  }
-  terminal.value = terminalOutput;
-  terminal.scrollTop = terminal.scrollHeight;
-}
-function clearVpcTerminal() {
-  const terminal = document.getElementById('aws-vpc-terminal');
-  terminal.value = 'Terminal cleared.\nInitializing lab environment...\nTerraform initialized successfully.';
-  terminal.scrollTop = terminal.scrollHeight;
-}
-function showVpcSolution() {
-  const editor = document.getElementById('aws-vpc-editor');
-  const terminal = document.getElementById('aws-vpc-terminal');
-  if (editor.dataset.file !== 'vpc.tf') loadVpcFile('vpc.tf');
-  editor.value = `resource "aws_vpc" "main" {
-  cidr_block = "10.0.0.0/16"
-}
-
-resource "aws_subnet" "public" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.1.0/24"
-}
-
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.main.id
-}
-
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
-}
-
-resource "aws_route_table_association" "public_assoc" {
-  subnet_id      = aws_subnet.public.id
-  route_table_id = aws_route_table.public.id
-}`;
-  terminal.value += '\n\nSolution displayed in the editor.\nYou can now check the code or modify it as needed.';
-  terminal.scrollTop = terminal.scrollHeight;
-}
-function restartVpcLab() {
-  vpcFiles = Object.assign({}, vpcInitialFiles);
-  loadVpcFile('provider.tf');
-  clearVpcTerminal();
-  const ins = document.getElementById('aws-vpc-instructions');
-  const mainContent = document.getElementById('aws-vpc-main-content');
-  // Always show instructions after restart
-  if (ins.classList.contains('hidden')) toggleInstructionsVpc();
-  mainContent.classList.remove("full");
-}
-
-/* Hide/show instructions for VPC lab only */
-function toggleInstructionsVpc() {
-  const ins = document.getElementById('aws-vpc-instructions');
-  const btn = ins.parentElement.parentElement.parentElement.querySelector('.aws-vpc-header button');
-  const mainContent = document.getElementById('aws-vpc-main-content');
-  ins.classList.toggle('hidden');
-  if (ins.classList.contains('hidden')) {
-    mainContent.classList.add("full");
-  } else {
-    mainContent.classList.remove("full");
-  }
-  btn.textContent = ins.classList.contains('hidden') ? 'Show Instructions' : 'Hide Instructions';
-}
-</script>
-</body>
-</html>
+.aws-vpc-main-content.full .aws-vpc-editor-terminal
