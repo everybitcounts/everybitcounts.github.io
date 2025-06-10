@@ -1,16 +1,3 @@
-Absolutely! Here’s how to achieve what you want:
-
-1. **Keep Workstation Text White:**  
-Add `color: #fff;` to `.aws-vpc-workspace h3`.
-
-2. **Expand Editor/Terminal when Instructions are Hidden:**  
-You need to make the following changes:
-- When instructions are hidden, the `.aws-vpc-main-content` should switch to a single-column layout and the `.aws-vpc-editor-terminal` should fill the available height and width.
-- The `.aws-vpc-editor-section` and `.aws-vpc-terminal-section` (and their `<textarea>`) should stretch to fill all available space.
-
-Below is the improved code. The key is the `.full` class and flexbox with `min-height: 0; height: 100%;` on each flex child.
-
-```html name=index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
