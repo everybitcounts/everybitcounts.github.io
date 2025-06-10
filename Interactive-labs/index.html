@@ -16,20 +16,6 @@
       overscroll-behavior: none;
     }
 
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 10px 16px;
-      border: 1px solid #00ffd5;
-      background: transparent;
-      color: #00ffd5;
-      border-radius: 8px;
-      z-index: 100;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
     .section {
       padding: 60px 20px;
       max-width: 700px;
@@ -106,7 +92,7 @@
       width: 100vw;
       height: 100vh;
       overflow: auto;
-      background: #0a0a1a;
+      background: rgba(10,10,26,0.8); /* 80% opaque, 20% transparent */
       position: relative;
       display: flex;
       align-items: stretch;
@@ -208,7 +194,7 @@
       background: #1a1a2e;
       border-bottom: 1px solid rgba(0,255,200,0.2);
     }
-    #editor, #terminal {
+    textarea {
       flex: 1;
       background: #2a2a3e;
       border: 1px solid rgba(0,255,200,0.2);
@@ -219,7 +205,7 @@
       color: #fff;
       resize: none;
     }
-    #terminal {
+    #terminal-aws-vpc, #terminal-aws-ec2 {
       background: #1a1a2e;
       color: #00ffd5;
     }
@@ -314,7 +300,6 @@
   </style>
 </head>
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()">Light Mode</button>
   <div class="section" style="padding-top: 100px;">
     <h1>
       Terraform Academy<br>Interactive Labs
@@ -431,19 +416,19 @@ Terraform initialized successfully.
   </dialog>
 
   <script>
-    // Theme toggle (optional)
-    function toggleTheme() {
-      document.body.classList.toggle('light');
-      document.querySelector('.theme-toggle').textContent =
-        document.body.classList.contains('light') ? 'Dark Mode' : 'Light Mode';
-    }
-
     // Modal open/close logic
     function openModal(lab) {
-      document.getElementById('modal-' + lab).showModal();
+      const dialog = document.getElementById('modal-' + lab);
+      dialog.showModal();
+      restartLab(lab);
+      // Fix: Remove all event listeners before adding new
+      dialog.querySelector('.close-modal').onclick = function() {
+        closeModal(lab);
+      };
     }
     function closeModal(lab) {
-      document.getElementById('modal-' + lab).close();
+      const dialog = document.getElementById('modal-' + lab);
+      dialog.close();
     }
 
     // Hide/show instructions per lab
@@ -590,20 +575,6 @@ resource "aws_route_table_association" "public_assoc" {
       var ins = document.getElementById('instructions-' + lab);
       if (ins.classList.contains('hidden')) hideInstructions(lab);
     }
-
-    // Load initial files for each lab when modal opens
-    document.querySelectorAll('dialog').forEach(dialog => {
-      dialog.addEventListener('show', function() {
-        var lab = this.id.replace('modal-','');
-        restartLab(lab);
-      });
-    });
-
-    // Optional: load default file when modal is opened via button
-    window.openModal = function(lab) {
-      document.getElementById('modal-' + lab).showModal();
-      restartLab(lab);
-    };
   </script>
 </body>
 </html>
