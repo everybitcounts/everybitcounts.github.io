@@ -1,25 +1,391 @@
-<!-- ...HEAD stays the same except... -->
+```html name=index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Terraform Academy Interactive Labs</title>
 <style>
-/* ...other styles... */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background: radial-gradient(circle at center, #0a0a1a, #000);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #fff;
+  perspective: 1000px;
+  height: 100%;
+  overscroll-behavior: none;
+}
+body.light {
+  background: radial-gradient(circle at center, #fff, #ddeeff);
+  color: #111;
+}
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 16px;
+  border: 1px solid #00ffd5;
+  background: transparent;
+  color: #00ffd5;
+  border-radius: 8px;
+  z-index: 100;
+  cursor: pointer;
+  font-weight: bold;
+}
+.article-container {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+.section {
+  padding: 60px 20px;
+  max-width: 700px;
+  margin: auto;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(0, 255, 200, 0.2);
+  border-radius: 18px;
+  box-shadow: 0 0 50px rgba(0, 255, 255, 0.08);
+  margin-bottom: 50px;
+  position: relative;
+}
+.section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(to right, #00ffd5, #66ffe6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.section p {
+  line-height: 1.6;
+}
+.modal-button {
+  display: block;
+  margin: 10px auto;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid #00ffd5;
+  color: #00ffd5;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  text-align: center;
+  width: 80vw;
+  opacity: 0.8;
+  font-size: 1.1rem;
+}
+.modal-button .title-gradient {
+  background: linear-gradient(to right, #00ffd5, #00aaff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+dialog {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  z-index: 1000;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+body.light dialog {
+  background: transparent;
+}
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+.lab-content {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  background: #0a0a1a;
+  display: flex;
+  flex-direction: column;
+}
+.lab-content html, .lab-content body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0a0a1a;
+  color: #fff;
+  overscroll-behavior: none;
+}
+.aws-vpc-lab-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 0;
+}
+.aws-vpc-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: #1a1a2e;
+  border-bottom: 1px solid rgba(0,255,200,0.2);
+  gap: 8px;
+}
+.aws-vpc-header h1 {
+  font-size: 1.2rem;
+  color: #00ffd5;
+  margin-right: auto;
+}
+.aws-vpc-header button {
+  background: transparent;
+  border: 1px solid #00ffd5;
+  color: #00ffd5;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: bold;
+  padding: 6px 12px;
+}
+.aws-vpc-header button:not(:last-child) {
+  margin-right: 5px;
+}
+.aws-vpc-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 0;
+  overflow: hidden;
+}
 .aws-vpc-instructions {
   background: #1a1a2e;
   border: 1px solid rgba(0,255,200,0.2);
   border-radius: 8px;
   padding: 15px;
   display: block;
-  color: #fff; /* Make instructions text always white */
+  color: #fff;
 }
-/* ...rest of your CSS... */
+.aws-vpc-instructions.hidden {
+  display: none;
+}
+.aws-vpc-instructions h2 {
+  font-size: 1.1rem;
+  color: #00ffd5;
+  margin-bottom: 10px;
+}
+.aws-vpc-instructions p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.aws-vpc-editor-terminal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+.aws-vpc-editor-section, .aws-vpc-terminal-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.aws-vpc-editor-section h3, .aws-vpc-terminal-section h3 {
+  font-size: 0.9rem;
+  color: #00ffd5;
+  padding: 5px 10px;
+  background: #1a1a2e;
+  border-bottom: 1px solid rgba(0,255,200,0.2);
+}
+.aws-vpc-editor, .aws-vpc-terminal {
+  flex: 1;
+  background: #2a2a3e;
+  border: 1px solid rgba(0,255,200,0.2);
+  border-radius: 4px;
+  padding: 10px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: #fff;
+  resize: none;
+  min-height: 0;
+}
+.aws-vpc-terminal {
+  background: #1a1a2e;
+  color: #00ffd5;
+}
+.aws-vpc-workspace {
+  background: #1a1a2e;
+  border: 1px solid rgba(0,255,200,0.2);
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.aws-vpc-workspace h3 {
+  font-size: 0.9rem;
+  color: #00ffd5;
+  margin-bottom: 10px;
+}
+.aws-vpc-file-tree {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+.aws-vpc-file-tree ul {
+  list-style: none;
+  padding-left: 15px;
+}
+.aws-vpc-file-tree li {
+  margin: 5px 0;
+}
+.aws-vpc-file-tree li.file {
+  color: #00ffd5;
+  cursor: pointer;
+}
+.aws-vpc-button-group {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 10px;
+  background: #0a0a1a;
+  border-top: 1px solid rgba(0,255,200,0.09);
+}
+.aws-vpc-check-btn, .aws-vpc-clear-btn, .aws-vpc-check-answer-btn, .aws-vpc-restart-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  min-width: 100px;
+}
+.aws-vpc-check-btn {
+  background: #00ffd5;
+  color: #000;
+}
+.aws-vpc-check-btn:hover {
+  background: #66ffe6;
+}
+.aws-vpc-clear-btn {
+  background: #ff5555;
+  color: #fff;
+}
+.aws-vpc-clear-btn:hover {
+  background: #ff7777;
+}
+.aws-vpc-check-answer-btn {
+  background: #5555dd;
+  color: #fff;
+}
+.aws-vpc-check-answer-btn:hover {
+  background: #7777ff;
+}
+.aws-vpc-restart-btn {
+  background: #ffaa00;
+  color: #fff;
+}
+.aws-vpc-restart-btn:hover {
+  background: #ffcc33;
+}
+@media (min-width:768px) {
+  .aws-vpc-main-content {
+    flex-direction: row;
+  }
+  .aws-vpc-instructions {
+    flex: 0 0 30%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .aws-vpc-editor-terminal {
+    flex: 0 0 70%;
+  }
+  .aws-vpc-editor-section, .aws-vpc-terminal-section {
+    flex: 1;
+  }
+}
 </style>
 </head>
 <body>
 <button class="theme-toggle" onclick="toggleTheme()">Light Mode</button>
-<!-- <canvas class="webgl-shader" id="shaderCanvas"></canvas>  <-- REMOVE THIS LINE -->
 
 <div class="article-container" id="article">
-  <!-- ...rest of your content... -->
+<div class="section" style="text-align: center; padding-top: 100px;">
+<h1 style="
+font-size: 2.4rem;
+background: linear-gradient(to right, #00ffd5, #00aaff);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+margin-bottom: 10px;">
+Terraform Academy
+Interactive Labs
+</h1>
+<p style="opacity: 0.8; font-size: 1.1rem;">
+Hands-On | Cloud-Based
+</p>
 </div>
 
+<!-- Modal Trigger Buttons for AWS Labs -->
+<button class="modal-button" onclick="openModal('aws-vpc-modal')"><span class="title-gradient">AWS VPC Lab</span>: Create a VPC in AWS</button>
+<!-- (... other modal buttons unchanged ...) -->
+
+<!-- AWS VPC LAB MODAL -->
+<dialog id="aws-vpc-modal">
+  <div class="lab-content">
+    <div class="aws-vpc-lab-container">
+      <div class="aws-vpc-header">
+        <h1>AWS VPC Lab</h1>
+        <button type="button" onclick="toggleInstructionsVpc()">Hide Instructions</button>
+        <button type="button" onclick="closeModal('aws-vpc-modal')">Close</button>
+      </div>
+      <div class="aws-vpc-main-content">
+        <div class="aws-vpc-instructions" id="aws-vpc-instructions">
+          <h2>Create a VPC in AWS</h2>
+          <p>In the "Code Editor" tab, open the <code>vpc.tf</code> file.</p>
+          <p>Your task: Add resources to create a VPC with a CIDR block of <code>10.0.0.0/16</code>, a subnet with a CIDR block of <code>10.0.1.0/24</code>, an internet gateway attached to the VPC, a route table with a route to the internet gateway, and an association between the subnet and the route table.</p>
+        </div>
+        <div class="aws-vpc-editor-terminal">
+          <div class="aws-vpc-workspace">
+            <h3>WORKSTATION</h3>
+            <div class="aws-vpc-file-tree">
+              <ul>
+                <li>📁 /root/learn-terraform-aws-vpc</li>
+                <ul>
+                  <li class="file" onclick="loadVpcFile('provider.tf')">📄 provider.tf</li>
+                  <li class="file" onclick="loadVpcFile('vpc.tf')">📄 vpc.tf</li>
+                </ul>
+              </ul>
+            </div>
+          </div>
+          <div class="aws-vpc-editor-section">
+            <h3>Code Editor</h3>
+            <textarea id="aws-vpc-editor" spellcheck="false"></textarea>
+          </div>
+          <div class="aws-vpc-terminal-section">
+            <h3>Terminal</h3>
+            <textarea id="aws-vpc-terminal" readonly>
+Initializing lab environment...
+Terraform initialized successfully.
+            </textarea>
+          </div>
+        </div>
+      </div>
+      <div class="aws-vpc-button-group">
+        <button class="aws-vpc-check-btn" onclick="checkVpcCode()">Check</button>
+        <button class="aws-vpc-clear-btn" onclick="clearVpcTerminal()">Clear Terminal</button>
+        <button class="aws-vpc-check-answer-btn" onclick="showVpcSolution()">Check Answer</button>
+        <button class="aws-vpc-restart-btn" onclick="restartVpcLab()">Restart</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- (Other modals remain as placeholders for now) -->
+
+</div>
 <script>
 const article = document.getElementById('article');
 window.addEventListener('scroll', () => {
@@ -64,32 +430,93 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-/* REMOVE THE CANVAS CODE:
-const canvas = document.getElementById('shaderCanvas');
-const ctx = canvas.getContext('2d');
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+/* ----------- VPC Lab State (independent) ----------- */
+const vpcInitialFiles = {
+  'provider.tf': `provider "aws" {
+  region = "us-east-1"
+}`,
+  'vpc.tf': `# Define your VPC resources here
+`
+};
+let vpcFiles = {};
+let vpcCurrentFile = 'provider.tf';
+function loadVpcFile(filename) {
+  vpcCurrentFile = filename;
+  document.getElementById('aws-vpc-editor').value = vpcFiles[filename];
+  document.getElementById('aws-vpc-editor').dataset.file = filename;
 }
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const time = Date.now() * 0.002;
-  for (let i = 0; i < 200; i++) {
-    const x = Math.sin(i + time) * (canvas.width / 3) + canvas.width / 2;
-    const y = Math.cos(i + time) * (canvas.height / 3) + canvas.height / 2;
-    ctx.beginPath();
-    ctx.arc(x, y, 1.2, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(0,255,255,${Math.random() * 0.2})`;
-    ctx.fill();
+function checkVpcCode() {
+  const editor = document.getElementById('aws-vpc-editor');
+  const terminal = document.getElementById('aws-vpc-terminal');
+  let code = editor.value.trim();
+  let filename = editor.dataset.file;
+  let terminalOutput = terminal.value + '\n\nChecking your code...\n';
+  if (filename !== 'vpc.tf') {
+    terminalOutput += 'Error: Please edit vpc.tf to add the required resources.';
+  } else if (
+    code.includes('aws_vpc') && code.includes('aws_subnet') && code.includes('aws_internet_gateway')
+    && code.includes('aws_route_table') && code.includes('aws_route_table_association')
+    && code.includes('10.0.0.0/16') && code.includes('10.0.1.0/24') && code.includes('0.0.0.0/0')
+  ) {
+    terminalOutput += 'Success! Your Terraform code is correct.\nApplying configuration...\nVPC created successfully.';
+  } else {
+    terminalOutput += 'Error: Incomplete or missing resources/CIDRs for the VPC lab.';
   }
-  requestAnimationFrame(draw);
+  terminal.value = terminalOutput;
+  terminal.scrollTop = terminal.scrollHeight;
 }
-draw();
-*/
+function clearVpcTerminal() {
+  const terminal = document.getElementById('aws-vpc-terminal');
+  terminal.value = 'Terminal cleared.\nInitializing lab environment...\nTerraform initialized successfully.';
+  terminal.scrollTop = terminal.scrollHeight;
+}
+function showVpcSolution() {
+  const editor = document.getElementById('aws-vpc-editor');
+  const terminal = document.getElementById('aws-vpc-terminal');
+  if (editor.dataset.file !== 'vpc.tf') loadVpcFile('vpc.tf');
+  editor.value = `resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
 
-/* ...rest of your VPC Lab JS... */
+resource "aws_subnet" "public" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = "10.0.1.0/24"
+}
+
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main.id
+}
+
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+}
+
+resource "aws_route_table_association" "public_assoc" {
+  subnet_id      = aws_subnet.public.id
+  route_table_id = aws_route_table.public.id
+}`;
+  terminal.value += '\n\nSolution displayed in the editor.\nYou can now check the code or modify it as needed.';
+  terminal.scrollTop = terminal.scrollHeight;
+}
+function restartVpcLab() {
+  vpcFiles = Object.assign({}, vpcInitialFiles);
+  loadVpcFile('provider.tf');
+  clearVpcTerminal();
+  const ins = document.getElementById('aws-vpc-instructions');
+  if (ins.classList.contains('hidden')) toggleInstructionsVpc();
+}
+function toggleInstructionsVpc() {
+  const ins = document.getElementById('aws-vpc-instructions');
+  const btn = ins.parentElement.parentElement.parentElement.querySelector('.aws-vpc-header button');
+  ins.classList.toggle('hidden');
+  btn.textContent = ins.classList.contains('hidden') ? 'Show Instructions' : 'Hide Instructions';
+}
 </script>
 </body>
 </html>
+```
