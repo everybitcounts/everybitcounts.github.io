@@ -1,32 +1,609 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Interactive Labs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terraform Academy Interactive Labs</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background: radial-gradient(circle at center, #0a0a1a, #000);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #fff;
+      height: 100%;
+      overscroll-behavior: none;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      border: 1px solid #00ffd5;
+      background: transparent;
+      color: #00ffd5;
+      border-radius: 8px;
+      z-index: 100;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .section {
+      padding: 60px 20px;
+      max-width: 700px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(0, 255, 200, 0.2);
+      border-radius: 18px;
+      box-shadow: 0 0 50px rgba(0, 255, 255, 0.08);
+      margin-bottom: 50px;
+      position: relative;
+      text-align: center;
+    }
+
+    .section h1 {
+      font-size: 2.4rem;
+      background: linear-gradient(to right, #00ffd5, #00aaff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    .section p {
+      line-height: 1.6;
+      opacity: 0.8;
+      font-size: 1.1rem;
+    }
+
+    .modal-button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid #00ffd5;
+      color: #00ffd5;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      text-align: center;
+      width: 80vw;
+      opacity: 0.8;
+      font-size: 1.1rem;
+    }
+
+    .modal-button .title-gradient {
+      background: linear-gradient(to right, #00ffd5, #00aaff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    dialog {
+      width: 100vw;
+      height: 100vh;
+      max-width: 100vw;
+      max-height: 100vh;
+      margin: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+      z-index: 1000;
+      overflow: hidden;
+      overscroll-behavior: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    dialog::backdrop {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .lab-content {
+      width: 100vw;
+      height: 100vh;
+      overflow: auto;
+      background: #0a0a1a;
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+
+    .lab-inner {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .close-modal {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid #00ffd5;
+      color: #00ffd5;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 1001;
+    }
+
+    /* Lab UI styles (shared) */
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 10px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      background: #1a1a2e;
+      border-bottom: 1px solid rgba(0,255,200,0.2);
+    }
+    .header h1 {
+      font-size: 1.2rem;
+      color: #00ffd5;
+      margin-right: auto;
+    }
+    .header button {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px 0;
+    }
+    .instructions {
+      background: #1a1a2e;
+      border: 1px solid rgba(0,255,200,0.2);
+      border-radius: 8px;
+      padding: 15px;
+      display: block;
+    }
+    .instructions.hidden {
+      display: none;
+    }
+    .instructions h2 {
+      font-size: 1.1rem;
+      color: #00ffd5;
+      margin-bottom: 10px;
+    }
+    .instructions p {
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .editor-terminal {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .editor-section, .terminal-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .editor-section h3, .terminal-section h3 {
+      font-size: 0.9rem;
+      color: #00ffd5;
+      padding: 5px 10px;
+      background: #1a1a2e;
+      border-bottom: 1px solid rgba(0,255,200,0.2);
+    }
+    #editor, #terminal {
+      flex: 1;
+      background: #2a2a3e;
+      border: 1px solid rgba(0,255,200,0.2);
+      border-radius: 4px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: #fff;
+      resize: none;
+    }
+    #terminal {
+      background: #1a1a2e;
+      color: #00ffd5;
+    }
+    .workspace {
+      background: #1a1a2e;
+      border: 1px solid rgba(0,255,200,0.2);
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .workspace h3 {
+      font-size: 0.9rem;
+      color: #00ffd5;
+      margin-bottom: 10px;
+    }
+    .file-tree {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .file-tree ul {
+      list-style: none;
+      padding-left: 15px;
+    }
+    .file-tree li {
+      margin: 5px 0;
+    }
+    .file-tree li.file {
+      color: #00ffd5;
+      cursor: pointer;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .check-btn, .clear-btn, .check-answer-btn, .restart-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      min-width: 100px;
+    }
+    .check-btn {
+      background: #00ffd5;
+      color: #000;
+    }
+    .check-btn:hover {
+      background: #66ffe6;
+    }
+    .clear-btn {
+      background: #ff5555;
+      color: #fff;
+    }
+    .clear-btn:hover {
+      background: #ff7777;
+    }
+    .check-answer-btn {
+      background: #5555dd;
+      color: #fff;
+    }
+    .check-answer-btn:hover {
+      background: #7777ff;
+    }
+    .restart-btn {
+      background: #ffaa00;
+      color: #fff;
+    }
+    .restart-btn:hover {
+      background: #ffcc33;
+    }
+    @media (min-width:768px) {
+      .main-content {
+        flex-direction: row;
+      }
+      .instructions {
+        flex: 0 0 30%;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+      .editor-terminal {
+        flex: 0 0 70%;
+      }
+      .editor-section, .terminal-section {
+        flex: 1;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="sidebar">
-    <div class="logo-container">
-      <img src="image1" alt="Terraform Academy Logo" class="logo" />
-    </div>
-    <h2>Interactive Labs</h2>
-    <ul>
-      <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="page1.html">Custom Page 1</a></li>
-      <li><a href="page2.html">Custom Page 2</a></li>
-    </ul>
+  <button class="theme-toggle" onclick="toggleTheme()">Light Mode</button>
+  <div class="section" style="padding-top: 100px;">
+    <h1>
+      Terraform Academy<br>Interactive Labs
+    </h1>
+    <p>Hands-On | Cloud-Based</p>
   </div>
-  <div class="main-content">
-    <div class="section">
-      <h1>Welcome to <span class="gradient-text">Interactive Labs</span></h1>
-      <p>Hands-On | Cloud-Based</p>
-      <div class="card">
-        <h2 class="gradient-text">Getting Started</h2>
-        <p>Use the sidebar to navigate to custom labs and pages.</p>
+  <button class="modal-button" onclick="openModal('aws-vpc')"><span class="title-gradient">AWS VPC Lab</span>: Create a VPC in AWS</button>
+  <button class="modal-button" onclick="openModal('aws-ec2')"><span class="title-gradient">AWS EC2 Lab</span>: Launch an EC2 Instance in AWS</button>
+
+  <!-- Modal for AWS VPC Lab -->
+  <dialog id="modal-aws-vpc">
+    <div class="lab-content">
+      <div class="lab-inner">
+        <div class="container">
+          <div class="header">
+            <h1>AWS VPC Lab</h1>
+            <button onclick="hideInstructions('aws-vpc')">Hide Instructions</button>
+          </div>
+          <div class="main-content">
+            <div class="instructions" id="instructions-aws-vpc">
+              <h2>Create a VPC in AWS</h2>
+              <p>In the "Code Editor" tab, open the <code>vpc.tf</code> file.</p>
+              <p>Your task: Add resources to create a VPC with a CIDR block of <code>10.0.0.0/16</code>, a subnet with a CIDR block of <code>10.0.1.0/24</code>, an internet gateway attached to the VPC, a route table with a route to the internet gateway, and an association between the subnet and the route table.</p>
+            </div>
+            <div class="editor-terminal">
+              <div class="workspace">
+                <h3>WORKSTATION</h3>
+                <div class="file-tree">
+                  <ul>
+                    <li>📁 /root/learn-terraform-aws-vpc</li>
+                    <ul>
+                      <li class="file" onclick="loadFile('aws-vpc','provider.tf')">📄 provider.tf</li>
+                      <li class="file" onclick="loadFile('aws-vpc','vpc.tf')">📄 vpc.tf</li>
+                    </ul>
+                  </ul>
+                </div>
+              </div>
+              <div class="editor-section">
+                <h3>Code Editor</h3>
+                <textarea id="editor-aws-vpc" spellcheck="false"></textarea>
+              </div>
+              <div class="terminal-section">
+                <h3>Terminal</h3>
+                <textarea id="terminal-aws-vpc" readonly>
+Initializing lab environment...
+Terraform initialized successfully.
+                </textarea>
+              </div>
+            </div>
+          </div>
+          <div class="button-group">
+            <button class="check-btn" onclick="checkCode('aws-vpc')">Check</button>
+            <button class="clear-btn" onclick="clearTerminal('aws-vpc')">Clear Terminal</button>
+            <button class="check-answer-btn" onclick="checkAnswer('aws-vpc')">Check Answer</button>
+            <button class="restart-btn" onclick="restartLab('aws-vpc')">Restart</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+    <button class="close-modal" onclick="closeModal('aws-vpc')">Close</button>
+  </dialog>
+
+  <!-- Modal for AWS EC2 Lab -->
+  <dialog id="modal-aws-ec2">
+    <div class="lab-content">
+      <div class="lab-inner">
+        <div class="container">
+          <div class="header">
+            <h1>AWS EC2 Lab</h1>
+            <button onclick="hideInstructions('aws-ec2')">Hide Instructions</button>
+          </div>
+          <div class="main-content">
+            <div class="instructions" id="instructions-aws-ec2">
+              <h2>Launch an EC2 Instance in AWS</h2>
+              <p>In the "Code Editor" tab, open the <code>main.tf</code> file.</p>
+              <p>Your task: Add a resource to launch an EC2 instance named <code>example</code> with the AMI ID <code>ami-0c55b159cbf677470</code> and instance type <code>t2.micro</code>.</p>
+            </div>
+            <div class="editor-terminal">
+              <div class="workspace">
+                <h3>WORKSTATION</h3>
+                <div class="file-tree">
+                  <ul>
+                    <li>📁 /root/learn-terraform-aws-ec2</li>
+                    <ul>
+                      <li class="file" onclick="loadFile('aws-ec2','provider.tf')">📄 provider.tf</li>
+                      <li class="file" onclick="loadFile('aws-ec2','main.tf')">📄 main.tf</li>
+                    </ul>
+                  </ul>
+                </div>
+              </div>
+              <div class="editor-section">
+                <h3>Code Editor</h3>
+                <textarea id="editor-aws-ec2" spellcheck="false"></textarea>
+              </div>
+              <div class="terminal-section">
+                <h3>Terminal</h3>
+                <textarea id="terminal-aws-ec2" readonly>
+Initializing lab environment...
+Terraform initialized successfully.
+                </textarea>
+              </div>
+            </div>
+          </div>
+          <div class="button-group">
+            <button class="check-btn" onclick="checkCode('aws-ec2')">Check</button>
+            <button class="clear-btn" onclick="clearTerminal('aws-ec2')">Clear Terminal</button>
+            <button class="check-answer-btn" onclick="checkAnswer('aws-ec2')">Check Answer</button>
+            <button class="restart-btn" onclick="restartLab('aws-ec2')">Restart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="close-modal" onclick="closeModal('aws-ec2')">Close</button>
+  </dialog>
+
+  <script>
+    // Theme toggle (optional)
+    function toggleTheme() {
+      document.body.classList.toggle('light');
+      document.querySelector('.theme-toggle').textContent =
+        document.body.classList.contains('light') ? 'Dark Mode' : 'Light Mode';
+    }
+
+    // Modal open/close logic
+    function openModal(lab) {
+      document.getElementById('modal-' + lab).showModal();
+    }
+    function closeModal(lab) {
+      document.getElementById('modal-' + lab).close();
+    }
+
+    // Hide/show instructions per lab
+    function hideInstructions(lab) {
+      var ins = document.getElementById('instructions-' + lab);
+      var btn = ins.parentElement.parentElement.parentElement.querySelector('.header button');
+      ins.classList.toggle('hidden');
+      btn.textContent = ins.classList.contains('hidden') ? 'Show Instructions' : 'Hide Instructions';
+    }
+
+    // Per-lab initial state and file data
+    const LABS = {
+      "aws-vpc": {
+        initialFiles: {
+          'provider.tf': `provider "aws" {
+  region = "us-east-1"
+}`,
+          'vpc.tf': `# Define your VPC resources here
+`
+        },
+        solution: `resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
+
+resource "aws_subnet" "public" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = "10.0.1.0/24"
+}
+
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main.id
+}
+
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+}
+
+resource "aws_route_table_association" "public_assoc" {
+  subnet_id      = aws_subnet.public.id
+  route_table_id = aws_route_table.public.id
+}`
+      },
+      "aws-ec2": {
+        initialFiles: {
+          'provider.tf': `provider "aws" {
+  region = "us-east-1"
+}`,
+          'main.tf': `# Define your EC2 instance here
+`
+        },
+        solution: `resource "aws_instance" "example" {
+  ami           = "ami-0c55b159cbf677470"
+  instance_type = "t2.micro"
+}`
+      }
+    };
+
+    // Lab state: files and currentFile per lab instance
+    const labState = {};
+    function ensureLabState(lab) {
+      if (!labState[lab]) {
+        labState[lab] = {
+          files: JSON.parse(JSON.stringify(LABS[lab].initialFiles)),
+          currentFile: Object.keys(LABS[lab].initialFiles)[0]
+        };
+      }
+    }
+
+    function loadFile(lab, filename) {
+      ensureLabState(lab);
+      labState[lab].currentFile = filename;
+      document.getElementById('editor-' + lab).value = labState[lab].files[filename];
+      document.getElementById('editor-' + lab).dataset.file = filename;
+    }
+
+    function checkCode(lab) {
+      ensureLabState(lab);
+      const editor = document.getElementById('editor-' + lab);
+      const terminal = document.getElementById('terminal-' + lab);
+      let code = editor.value.trim();
+      let filename = editor.dataset.file;
+      let terminalOutput = terminal.value + '\n\nChecking your code...\n';
+
+      if (lab === "aws-vpc") {
+        if (filename !== 'vpc.tf') {
+          terminalOutput += 'Error: Please edit vpc.tf to add the required resources.';
+        } else if (
+          code.includes('aws_vpc') && code.includes('aws_subnet') && code.includes('aws_internet_gateway')
+          && code.includes('aws_route_table') && code.includes('aws_route_table_association')
+          && code.includes('10.0.0.0/16') && code.includes('10.0.1.0/24') && code.includes('0.0.0.0/0')
+        ) {
+          terminalOutput += 'Success! Your Terraform code is correct.\nApplying configuration...\nVPC created successfully.';
+        } else {
+          terminalOutput += 'Error: Incomplete or missing resources/CIDRs for the VPC lab.';
+        }
+      } else if (lab === "aws-ec2") {
+        if (filename !== 'main.tf') {
+          terminalOutput += 'Error: Please edit main.tf to add the required resources.';
+        } else if (
+          code.includes('aws_instance') && code.includes('example') 
+          && code.includes('ami-0c55b159cbf677470') && code.includes('t2.micro')
+        ) {
+          terminalOutput += 'Success! Your Terraform code is correct.\nApplying configuration...\nEC2 instance launched successfully.';
+        } else {
+          terminalOutput += 'Error: Incomplete or missing resources for the EC2 lab.';
+        }
+      }
+      terminal.value = terminalOutput;
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function clearTerminal(lab) {
+      const terminal = document.getElementById('terminal-' + lab);
+      terminal.value = 'Terminal cleared.\nInitializing lab environment...\nTerraform initialized successfully.';
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function checkAnswer(lab) {
+      ensureLabState(lab);
+      const editor = document.getElementById('editor-' + lab);
+      const terminal = document.getElementById('terminal-' + lab);
+      if (lab === "aws-vpc") {
+        if (editor.dataset.file !== 'vpc.tf') loadFile(lab, 'vpc.tf');
+      } else if (lab === "aws-ec2") {
+        if (editor.dataset.file !== 'main.tf') loadFile(lab, 'main.tf');
+      }
+      editor.value = LABS[lab].solution;
+      terminal.value += '\n\nSolution displayed in the editor.\nYou can now check the code or modify it as needed.';
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function restartLab(lab) {
+      ensureLabState(lab);
+      labState[lab].files = JSON.parse(JSON.stringify(LABS[lab].initialFiles));
+      labState[lab].currentFile = Object.keys(LABS[lab].initialFiles)[0];
+      loadFile(lab, labState[lab].currentFile);
+      clearTerminal(lab);
+      // always show instructions after restart
+      var ins = document.getElementById('instructions-' + lab);
+      if (ins.classList.contains('hidden')) hideInstructions(lab);
+    }
+
+    // Load initial files for each lab when modal opens
+    document.querySelectorAll('dialog').forEach(dialog => {
+      dialog.addEventListener('show', function() {
+        var lab = this.id.replace('modal-','');
+        restartLab(lab);
+      });
+    });
+
+    // Optional: load default file when modal is opened via button
+    window.openModal = function(lab) {
+      document.getElementById('modal-' + lab).showModal();
+      restartLab(lab);
+    };
+  </script>
 </body>
 </html>
