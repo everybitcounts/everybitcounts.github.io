@@ -183,15 +183,25 @@ dialog::backdrop {
 .aws-vpc-file-tree li {
   margin: 5px 0;
 }
+.aws-vpc-file-tree li.parent-folder {
+  color: #fff; /* Make parent folder text white */
+  font-weight: bold;
+}
 .aws-vpc-file-tree li.file {
   color: #00ffd5;
   cursor: pointer;
 }
 .aws-vpc-editor-section, .aws-vpc-terminal-section {
-  flex: 1 1 0%;
-  min-height: 0;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+}
+.aws-vpc-editor-section {
+  flex: 3 3 0%;
+}
+.aws-vpc-terminal-section {
+  flex: 1.8 1.8 0%;
+  /* (3+1.8=4.8, so terminal is 1.8/4.8 ~37%) */
 }
 .aws-vpc-editor-section h3, .aws-vpc-terminal-section h3 {
   font-size: 0.9rem;
@@ -210,8 +220,7 @@ dialog::backdrop {
   font-size: 1.05rem;
   color: #fff;
   resize: none;
-  min-height: 240px;
-  height: 360px;
+  min-height: 120px;
   max-height: 1200px;
   width: 100%;
   box-sizing: border-box;
@@ -240,6 +249,10 @@ dialog::backdrop {
   cursor: pointer;
   text-align: center;
   min-width: 100px;
+  background: transparent;
+  color: #00ffd5;
+  border: 1px solid #00ffd5;
+  transition: background 0.2s, color 0.2s;
 }
 .aws-vpc-check-btn {
   background: #00ffd5;
@@ -251,6 +264,7 @@ dialog::backdrop {
 .aws-vpc-clear-btn {
   background: #ff5555;
   color: #fff;
+  border: 1px solid #ff5555;
 }
 .aws-vpc-clear-btn:hover {
   background: #ff7777;
@@ -258,6 +272,7 @@ dialog::backdrop {
 .aws-vpc-check-answer-btn {
   background: #5555dd;
   color: #fff;
+  border: 1px solid #5555dd;
 }
 .aws-vpc-check-answer-btn:hover {
   background: #7777ff;
@@ -265,6 +280,7 @@ dialog::backdrop {
 .aws-vpc-restart-btn {
   background: #ffaa00;
   color: #fff;
+  border: 1px solid #ffaa00;
 }
 .aws-vpc-restart-btn:hover {
   background: #ffcc33;
@@ -314,7 +330,6 @@ dialog::backdrop {
   </div>
 
   <button class="modal-button" onclick="openModal('aws-vpc-modal')"><span class="title-gradient">AWS VPC Lab</span>: Create a VPC in AWS</button>
-  <!-- (... other modal buttons unchanged ...) -->
 
   <!-- AWS VPC LAB MODAL -->
   <dialog id="aws-vpc-modal">
@@ -336,7 +351,7 @@ dialog::backdrop {
               <h3>WORKSTATION</h3>
               <div class="aws-vpc-file-tree">
                 <ul>
-                  <li>📁 /root/learn-terraform-aws-vpc</li>
+                  <li class="parent-folder">📁 /root/learn-terraform-aws-vpc</li>
                   <ul>
                     <li class="file" onclick="loadVpcFile('provider.tf')">📄 provider.tf</li>
                     <li class="file" onclick="loadVpcFile('vpc.tf')">📄 vpc.tf</li>
