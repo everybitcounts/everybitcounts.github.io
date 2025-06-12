@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>AWS VPC Lab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100%;
+            overflow-x: hidden;
+            overscroll-behavior: none;
+            position: relative;
+            -webkit-text-size-adjust: 100%;
+            touch-action: manipulation;
+        }
+
+        body.light {
+            background: radial-gradient(circle at center, #fff, #ddeeff);
+            color: #111;
+        }
+
+        textarea {
+            -webkit-text-size-adjust: 100%;
+            -webkit-user-select: text;
+            user-select: text;
+            touch-action: pan-y;
+        }
+
+        .background-octagons {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        .background-octagons span {
+            position: absolute;
+            display: block;
+            font-size: 3rem;
+            color: rgba(79, 195, 247, 0.16);
+        }
+
+        body.light .background-octagons span {
+            color: rgba(0, 170, 255, 0.2);
+        }
+
+        @keyframes float1 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(30px, -40px) rotate(90deg); }
+            50% { transform: translate(-20px, 20px) rotate(180deg); }
+            75% { transform: translate(10px, -10px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        @keyframes float2 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-40px, 30px) rotate(90deg); }
+            50% { transform: translate(25px, -20px) rotate(180deg); }
+            75% { transform: translate(-10px, 10px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        @keyframes float3 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, 20px) rotate(90deg); }
+            50% { transform: translate(-30px, -10px) rotate(180deg); }
+            75% { transform: translate(15px, 25px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        @keyframes float4 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, -30px) rotate(90deg); }
+            50% { transform: translate(-25px, 15px) rotate(180deg); }
+            75% { transform: translate(20px, -20px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        .oct1 { animation: float1 40s linear infinite; }
+        .oct2 { animation: float2 60s linear infinite; }
+        .oct3 { animation: float3 50s linear infinite; }
+        .oct4 { animation: float4 70s linear infinite; }
+
+        .theme-toggle, .back-button {
+            padding: 4px 8px;
+            border: 1px solid #00ffd5;
+            background: transparent;
+            color: #00ffd5;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s, border-color 0.3s, color 0.3s;
+            font-size: 0.7rem;
+        }
+
+        body.light .theme-toggle, body.light .back-button {
+            border-color: #00aaff;
+            color: #00aaff;
+        }
+
+        .theme-toggle:hover, .back-button:hover {
+            background: rgba(0, 255, 213, 0.05);
+        }
+
+        body.light .theme-toggle:hover, body.light .back-button:hover {
+            background: rgba(0, 170, 255, 0.05);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 8px;
+            backdrop-filter: blur(12px);
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        body.light .header {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 1.2rem;
+            background: linear-gradient(to right, #00ffd5, #66ffe6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            flex: 1;
+        }
+
+        body.light .header h1 {
+            background: linear-gradient(to right, #00aaff, #00ffd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .instructions-toggle {
+            background: transparent;
+            border: 1px solid #00ffd5;
+            color: #00ffd5;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: background 0.3s;
+        }
+
+        body.light .header .instructions-toggle {
+            border-color: #00aaff;
+            color: #00aaff;
+        }
+
+        .header .instructions-toggle:hover {
+            background: rgba(0, 255, 213, 0.05);
+        }
+
+        body.light .header .instructions-toggle:hover {
+            background: rgba(0, 170, 255, 0.05);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px 0;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 8px;
+            backdrop-filter: blur(12px);
+            padding: 15px;
+            display: block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light .instructions {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+        }
+
+        .instructions.hidden {
+            display: none;
+        }
+
+        .instructions h2 {
+            font-size: 1.1rem;
+            color: #00ffd5;
+            margin-bottom: 10px;
+        }
+
+        body.light .instructions h2 {
+            color: #00aaff;
+        }
+
+        .instructions p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .editor-terminal {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .editor-section, .terminal-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .editor-section h3, .terminal-section h3, .workspace h3 {
+            font-size: 0.9rem;
+            color: #00ffd5;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(0, 255, 213, 0.15);
+            backdrop-filter: blur(5px);
+        }
+
+        body.light .editor-section h3, body.light .terminal-section h3, body.light .workspace h3 {
+            color: #00aaff;
+            background: rgba(0, 0, 0, 0.02);
+            border-bottom: 1px solid rgba(0, 170, 255, 0.2);
+        }
+
+        #editor, #terminal {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 4px;
+            backdrop-filter: blur(12px);
+            padding: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #fff;
+            resize: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light #editor, body.light #terminal {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: #111;
+        }
+
+        #terminal {
+            color: #00ffd5;
+        }
+
+        body.light #terminal {
+            color: #00aaff;
+        }
+
+        .workspace {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 8px;
+            backdrop-filter: blur(12px);
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light .workspace {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+        }
+
+        .file-tree {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        body.light .file-tree {
+            color: #333;
+        }
+
+        .file-tree ul {
+            list-style: none;
+            padding-left: 15px;
+        }
+
+        .file-tree li {
+            margin: 5px 0;
+        }
+
+        .file-tree li.file {
+            color: #00ffd5;
+            cursor: pointer;
+        }
+
+        body.light .file-tree li.file {
+            color: #00aaff;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .check-btn, .clear-btn, .check-answer-btn, .restart-btn {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #00ffd5;
+            background: transparent;
+            color: #00ffd5;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            min-width: 50px;
+            transition: background 0.3s;
+        }
+
+        body.light .check-btn, body.light .clear-btn, body.light .check-answer-btn, body.light .restart-btn {
+            border-color: #00aaff;
+            color: #00aaff;
+        }
+
+        .check-btn:hover {
+            background: rgba(0, 255, 213, 0.05);
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 85, 85, 0.05);
+        }
+
+        .check-answer-btn:hover {
+            background: rgba(85, 85, 221, 0.05);
+        }
+
+        .restart-btn:hover {
+            background: rgba(255, 170, 0, 0.05);
+        }
+
+        body.light .check-btn:hover {
+            background: rgba(0, 170, 255, 0.05);
+        }
+
+        body.light .clear-btn:hover {
+            background: rgba(209, 50, 18, 0.05);
+        }
+
+        body.light .check-answer-btn:hover {
+            background: rgba(119, 119, 255, 0.05);
+        }
+
+        body.light .restart-btn:hover {
+            background: rgba(255, 204, 51, 0.05);
+        }
+
+        .modal-toggle {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            border: 1px solid #00ffd5;
+            color: #00ffd5;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            transition: background 0.3s;
+        }
+
+        body.light .modal-toggle {
+            border-color: #00aaff;
+            color: #00aaff;
+        }
+
+        .modal-toggle:hover {
+            background: rgba(0, 255, 213, 0.05);
+        }
+
+        body.light .modal-toggle:hover {
+            background: rgba(0, 170, 255, 0.05);
+        }
+
+        dialog {
+            width: 90vw;
+            height: 80vh;
+            max-width: 800px;
+            max-height: 600px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 8px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        body.light dialog {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            font-size: 0.9rem;
+            color: #00ffd5;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(0, 255, 213, 0.15);
+            backdrop-filter: blur(5px);
+        }
+
+        body.light .modal-header {
+            color: #00aaff;
+            background: rgba(0, 0, 0, 0.02);
+            border-bottom: 1px solid rgba(0, 170, 255, 0.2);
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 10px;
+        }
+
+        .modal-body textarea {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #fff;
+            resize: none;
+        }
+
+        body.light .modal-body textarea {
+            color: #111;
+        }
+
+        #terminalModal textarea {
+            color: #00ffd5;
+        }
+
+        body.light #terminalModal textarea {
+            color: #00aaff;
+        }
+
+        #completionPrompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            display: none;
+        }
+
+        .burst-octagons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .burst-oct {
+            position: absolute;
+            font-size: 4rem;
+            font-weight: bold;
+            color: rgba(79, 195, 247, 0.8);
+            animation: pulseburst 4s ease-in-out infinite;
+        }
+
+        body.light .burst-oct {
+            color: rgba(0, 170, 255, 0.8);
+        }
+
+        @keyframes pulseburst {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+            50% { transform: scale(1.8) rotate(180deg); opacity: 1; }
+        }
+
+        .burst-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            color: rgba(79, 195, 247, 0.9);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light .burst-message {
+            color: rgba(0, 170, 255, 0.9);
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+        }
+
+        .burst-message h2 {
+            margin-bottom: 0.5rem;
+            color: rgba(79, 195, 247, 1);
+        }
+
+        body.light .burst-message h2 {
+            color: rgba(0, 170, 255, 1);
+        }
+
+        .burst-message button {
+            margin-top: 1rem;
+            padding: 0.6rem 1.2rem;
+            background: transparent;
+            border: 1px solid rgba(79, 195, 247, 0.9);
+            color: rgba(79, 195, 247, 0.9);
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: background 0.3s;
+        }
+
+        body.light .burst-message button {
+            border-color: rgba(0, 170, 255, 0.9);
+            color: rgba(0, 170, 255, 0.9);
+        }
+
+        .burst-message button:hover {
+            background: rgba(79, 195, 247, 0.05);
+        }
+
+        body.light .burst-message button:hover {
+            background: rgba(0, 170, 255, 0.05);
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                flex-direction: row;
+            }
+            .instructions {
+                flex: 0 0 30%;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+            .editor-terminal {
+                flex: 0 0 70%;
+            }
+            .editor-section, .terminal-section {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-octagons">
+        <span class="oct1" style="top:10%; left:10%;">⬡</span>
+        <span class="oct2" style="top:40%; left:70%;">⬡</span>
+        <span class="oct3" style="top:70%; left:30%;">⬡</span>
+        <span class="oct4" style="top:20%; left:80%;">⬡</span>
+        <span class="oct1" style="top:85%; left:15%;">⬡</span>
+        <span class="oct2" style="top:65%; left:90%;">⬡</span>
+        <span class="oct3" style="top:30%; left:50%;">⬡</span>
+    </div>
+    <div class="container">
+        <div class="header">
+            <button class="instructions-toggle" onclick="hideInstructions()">Hide Instructions</button>
+            <h1>AWS VPC Lab</h1>
+            <div style="display: flex; gap: 5px;">
+                <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+                <button class="theme-toggle" onclick="toggleTheme()">Light Mode</button>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="instructions" id="instructions">
+                <h2>Create a VPC in AWS</h2>
+                <p>In the "Code Editor" tab, open the <code>vpc.tf</code> file.</p>
+                <p>Your task: Add resources to create a VPC with a CIDR block of <code>10.0.0.0/16</code>, a subnet with a CIDR block of <code>10.0.1.0/24</code>, an internet gateway attached to the VPC, a route table with a route to the internet gateway, and an association between the subnet and the route table.</p>
+            </div>
+            <div class="editor-terminal">
+                <div class="workspace">
+                    <h3>GitOps Repository</h3>
+                    <div class="file-tree">
+                        <ul>
+                            <li>📁 /root/learn-terraform-aws-vpc</li>
+                            <ul>
+                                <li class="file" onclick="loadFile('provider.tf')">📄 provider.tf</li>
+                                <li class="file" onclick="loadFile('vpc.tf')">📄 vpc.tf</li>
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+                <div class="editor-section">
+                    <h3>Code Editor</h3>
+                    <button class="modal-toggle" onclick="openEditorModal()">↗</button>
+                    <textarea id="editor" spellcheck="false"></textarea>
+                </div>
+                <div class="terminal-section">
+                    <h3>Terminal</h3>
+                    <button class="modal-toggle" onclick="openTerminalModal()">↗</button>
+                    <textarea id="terminal" readonly>
+Initializing lab environment...
+Terraform initialized successfully.
+                    </textarea>
+                </div>
+            </div>
+        </div>
+        <div class="button-group">
+            <button class="check-btn" onclick="checkCode()">Check</button>
+            <button class="clear-btn" onclick="clearTerminal()">Clear Terminal</button>
+            <button class="check-answer-btn" onclick="checkAnswer()">Check Answer</button>
+            <button class="restart-btn" onclick="restartLab()">Restart</button>
+        </div>
+    </div>
+    <dialog id="editorModal">
+        <div class="modal-content">
+            <div class="modal-header">Code Editor</div>
+            <div class="modal-body">
+                <textarea id="editorModalContent" spellcheck="false"></textarea>
+            </div>
+            <button class="modal-toggle" onclick="closeEditorModal()">✕</button>
+        </div>
+    </dialog>
+    <dialog id="terminalModal">
+        <div class="modal-content">
+            <div class="modal-header">Terminal</div>
+            <div class="modal-body">
+                <textarea id="terminalModalContent" readonly></textarea>
+            </div>
+            <button class="modal-toggle" onclick="closeTerminalModal()">✕</button>
+        </div>
+    </dialog>
+    <div id="completionPrompt">
+        <div class="burst-octagons">
+            <span class="burst-oct" style="top:10%; left:20%;">⬡</span>
+            <span class="burst-oct" style="top:30%; left:40%;">⬡</span>
+            <span class="burst-oct" style="top:50%; left:60%;">⬡</span>
+            <span class="burst-oct" style="top:70%; left:80%;">⬡</span>
+            <span class="burst-oct" style="top:20%; left:70%;">⬡</span>
+            <span class="burst-oct" style="top:60%; left:10%;">⬡</span>
+            <span class="burst-oct" style="top:80%; left:40%;">⬡</span>
+        </div>
+        <div class="burst-message">
+            <h2>Nicely Done!</h2>
+            <p>Congrats on completing the AWS VPC Lab!</p>
+            <button onclick="restartLab()">Restart</button>
+        </div>
+    </div>
+    <script>
+        const editor = document.getElementById('editor');
+        const terminal = document.getElementById('terminal');
+        const instructions = document.getElementById('instructions');
+        const editorModal = document.getElementById('editorModal');
+        const terminalModal = document.getElementById('terminalModal');
+        const editorModalContent = document.getElementById('editorModalContent');
+        const terminalModalContent = document.getElementById('terminalModalContent');
+        const initialFiles = {
+            'provider.tf': `provider "aws" {
+  region = "us-east-1"
+}`,
+            'vpc.tf': `# Define your VPC resources here
+`
+        };
+        let files = {...initialFiles};
+        const solution = `resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
+
+resource "aws_subnet" "public" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = "10.0.1.0/24"
+}
+
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main.id
+}
+
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+}
+
+resource "aws_route_table_association" "public_assoc" {
+  subnet_id      = aws_subnet.public.id
+  route_table_id = aws_route_table.public.id
+}`;
+
+        function loadFile(filename) {
+            editor.value = files[filename];
+            editor.dataset.file = filename;
+            if (editorModal.open) {
+                editorModalContent.value = editor.value;
+            }
+        }
+
+        function hideInstructions() {
+            instructions.classList.toggle('hidden');
+            const btn = document.querySelector('.instructions-toggle');
+            btn.textContent = instructions.classList.contains('hidden') ? 'Show Instructions' : 'Hide Instructions';
+        }
+
+        function checkCode() {
+            const code = editor.value.trim();
+            let terminalOutput = terminal.value + '\n\nChecking your code...\n';
+            if (editor.dataset.file !== 'vpc.tf') {
+                terminalOutput += 'Error: Please edit vpc.tf to add the required resources.';
+                terminal.value = terminalOutput;
+                terminalModalContent.value = terminalOutput;
+                return;
+            }
+            if (code.includes('aws_vpc') && code.includes('aws_subnet') && code.includes('aws_internet_gateway') && code.includes('aws_route_table') && code.includes('aws_route_table_association')) {
+                if (code.includes('10.0.0.0/16') && code.includes('10.0.1.0/24') && code.includes('0.0.0.0/0')) {
+                    terminalOutput += 'Success! Your Terraform code is correct.\nApplying configuration...\nVPC created successfully.';
+                    showCompletionPrompt();
+                } else {
+                    terminalOutput += 'Error: Your code is incomplete. Ensure the VPC has CIDR 10.0.0.0/16, subnet has CIDR 10.0.1.0/24, and route table routes to 0.0.0.0/0 via the internet gateway.';
+                }
+            } else {
+                terminalOutput += 'Error: Missing required resources. Please define aws_vpc, aws_subnet, aws_internet_gateway, aws_route_table, and aws_route_table_association.';
+            }
+            terminal.value = terminalOutput;
+            terminalModalContent.value = terminalOutput;
+            terminal.scrollTop = terminal.scrollHeight;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+        }
+
+        function clearTerminal() {
+            const output = 'Terminal cleared.\nInitializing lab environment...\nTerraform initialized successfully.';
+            terminal.value = output;
+            terminalModalContent.value = output;
+            terminal.scrollTop = terminal.scrollHeight;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+        }
+
+        function checkAnswer() {
+            if (editor.dataset.file !== 'vpc.tf') {
+                loadFile('vpc.tf');
+            }
+            editor.value = solution;
+            editorModalContent.value = solution;
+            terminal.value += '\n\nSolution displayed in the editor.\nYou can now check the code or modify it as needed.';
+            terminalModalContent.value = terminal.value;
+            terminal.scrollTop = terminal.scrollHeight;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+        }
+
+        function restartLab() {
+            files = {...initialFiles};
+            loadFile('provider.tf');
+            terminal.value = 'Initializing lab environment...\nTerraform initialized successfully.';
+            terminalModalContent.value = terminal.value;
+            terminal.scrollTop = terminal.scrollHeight;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            if (instructions.classList.contains('hidden')) {
+                hideInstructions();
+            }
+            terminal.value += '\n\nLab restarted. All changes have been reset.';
+            terminalModalContent.value = terminal.value;
+            terminal.scrollTop = terminal.scrollHeight;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            document.getElementById('completionPrompt').style.display = 'none';
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light');
+            const button = document.querySelector('.theme-toggle');
+            button.textContent = document.body.classList.contains('light') ? 'Dark Mode' : 'Light Mode';
+            localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+        }
+
+        function openEditorModal() {
+            editorModalContent.value = editor.value;
+            editorModal.showModal();
+            editorModalContent.focus();
+        }
+
+        function closeEditorModal() {
+            editor.value = editorModalContent.value;
+            editorModal.close();
+        }
+
+        function openTerminalModal() {
+            terminalModalContent.value = terminal.value;
+            terminalModal.showModal();
+        }
+
+        function closeTerminalModal() {
+            terminalModal.close();
+        }
+
+        function showCompletionPrompt() {
+            document.getElementById('completionPrompt').style.display = 'block';
+        }
+
+        (function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.body.classList.add('light');
+                document.querySelector('.theme-toggle').textContent = 'Dark Mode';
+            }
+        })();
+
+        editor.addEventListener('input', () => {
+            if (editorModal.open) {
+                editorModalContent.value = editor.value;
+            }
+        });
+
+        editorModalContent.addEventListener('input', () => {
+            editor.value = editorModalContent.value;
+        });
+
+        const observer = new MutationObserver(() => {
+            terminalModalContent.value = terminal.value;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+        });
+        observer.observe(terminal, { childList: true, characterData: true, subtree: true });
+
+        loadFile('provider.tf');
+    </script>
+</body>
+</html>
