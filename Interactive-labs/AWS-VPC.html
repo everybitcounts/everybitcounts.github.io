@@ -13,7 +13,6 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
-
         html, body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #000;
@@ -25,19 +24,16 @@
             -webkit-text-size-adjust: 100%;
             touch-action: manipulation;
         }
-
         body.light {
             background: radial-gradient(circle at center, #fff, #ddeeff);
             color: #111;
         }
-
         textarea {
             -webkit-text-size-adjust: 100%;
             -webkit-user-select: text;
             user-select: text;
             touch-action: pan-y;
         }
-
         .background-octagons {
             position: fixed;
             width: 100%;
@@ -49,18 +45,15 @@
             z-index: 0;
             opacity: 0.5;
         }
-
         .background-octagons span {
             position: absolute;
             display: block;
             font-size: 3rem;
             color: rgba(79, 195, 247, 0.16);
         }
-
         body.light .background-octagons span {
             color: rgba(0, 170, 255, 0.2);
         }
-
         @keyframes float1 {
             0% { transform: translate(0, 0) rotate(0deg); }
             25% { transform: translate(30px, -40px) rotate(90deg); }
@@ -68,7 +61,6 @@
             75% { transform: translate(10px, -10px) rotate(270deg); }
             100% { transform: translate(0, 0) rotate(360deg); }
         }
-
         @keyframes float2 {
             0% { transform: translate(0, 0) rotate(0deg); }
             25% { transform: translate(-40px, 30px) rotate(90deg); }
@@ -76,7 +68,6 @@
             75% { transform: translate(-10px, 10px) rotate(270deg); }
             100% { transform: translate(0, 0) rotate(360deg); }
         }
-
         @keyframes float3 {
             0% { transform: translate(0, 0) rotate(0deg); }
             25% { transform: translate(20px, 20px) rotate(90deg); }
@@ -84,7 +75,6 @@
             75% { transform: translate(15px, 25px) rotate(270deg); }
             100% { transform: translate(0, 0) rotate(360deg); }
         }
-
         @keyframes float4 {
             0% { transform: translate(0, 0) rotate(0deg); }
             25% { transform: translate(10px, -30px) rotate(90deg); }
@@ -92,12 +82,10 @@
             75% { transform: translate(20px, -20px) rotate(270deg); }
             100% { transform: translate(0, 0) rotate(360deg); }
         }
-
         .oct1 { animation: float1 40s linear infinite; }
         .oct2 { animation: float2 60s linear infinite; }
         .oct3 { animation: float3 50s linear infinite; }
         .oct4 { animation: float4 70s linear infinite; }
-
         .theme-toggle, .back-button {
             padding: 4px 8px;
             border: 1px solid #00ffd5;
@@ -110,20 +98,16 @@
             transition: background 0.3s, border-color 0.3s, color 0.3s;
             font-size: 0.7rem;
         }
-
         body.light .theme-toggle, body.light .back-button {
             border-color: #00aaff;
             color: #00aaff;
         }
-
         .theme-toggle:hover, .back-button:hover {
             background: rgba(0, 255, 213, 0.05);
         }
-
         body.light .theme-toggle:hover, body.light .back-button:hover {
             background: rgba(0, 170, 255, 0.05);
         }
-
         .container {
             display: flex;
             flex-direction: column;
@@ -132,7 +116,6 @@
             position: relative;
             z-index: 1;
         }
-
         .header {
             display: flex;
             align-items: center;
@@ -144,12 +127,10 @@
             margin-bottom: 10px;
             gap: 10px;
         }
-
         body.light .header {
             background: rgba(0, 0, 0, 0.02);
             border: 1px solid rgba(0, 170, 255, 0.2);
         }
-
         .header h1 {
             font-size: 1.2rem;
             background: linear-gradient(to right, #00ffd5, #66ffe6);
@@ -157,13 +138,11 @@
             -webkit-text-fill-color: transparent;
             flex: 1;
         }
-
         body.light .header h1 {
             background: linear-gradient(to right, #00aaff, #00ffd5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .header .instructions-toggle {
             background: transparent;
             border: 1px solid #00ffd5;
@@ -175,20 +154,16 @@
             backdrop-filter: blur(5px);
             transition: background 0.3s;
         }
-
         body.light .header .instructions-toggle {
             border-color: #00aaff;
             color: #00aaff;
         }
-
         .header .instructions-toggle:hover {
             background: rgba(0, 255, 213, 0.05);
         }
-
         body.light .header .instructions-toggle:hover {
             background: rgba(0, 170, 255, 0.05);
         }
-
         .main-content {
             flex: 1;
             display: flex;
@@ -196,7 +171,6 @@
             gap: 10px;
             padding: 10px 0;
         }
-
         .instructions {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(0, 255, 213, 0.15);
@@ -206,45 +180,37 @@
             display: block;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-
         body.light .instructions {
             background: rgba(0, 0, 0, 0.02);
             border: 1px solid rgba(0, 170, 255, 0.2);
         }
-
         .instructions.hidden {
             display: none;
         }
-
         .instructions h2 {
             font-size: 1.1rem;
             color: #00ffd5;
             margin-bottom: 10px;
         }
-
         body.light .instructions h2 {
             color: #00aaff;
         }
-
         .instructions p {
             font-size: 0.9rem;
             line-height: 1.4;
         }
-
         .editor-terminal {
             flex: 1;
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-
         .editor-section, .terminal-section {
             flex: 1;
             display: flex;
             flex-direction: column;
             position: relative;
         }
-
         .editor-section h3, .terminal-section h3, .workspace h3 {
             font-size: 0.9rem;
             color: #00ffd5;
@@ -253,13 +219,11 @@
             border-bottom: 1px solid rgba(0, 255, 213, 0.15);
             backdrop-filter: blur(5px);
         }
-
         body.light .editor-section h3, body.light .terminal-section h3, body.light .workspace h3 {
             color: #00aaff;
             background: rgba(0, 0, 0, 0.02);
             border-bottom: 1px solid rgba(0, 170, 255, 0.2);
         }
-
         #editor, #terminal {
             flex: 1;
             background: rgba(255, 255, 255, 0.02);
@@ -273,21 +237,17 @@
             resize: none;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-
         body.light #editor, body.light #terminal {
             background: rgba(0, 0, 0, 0.02);
             border: 1px solid rgba(0, 170, 255, 0.2);
             color: #111;
         }
-
         #terminal {
             color: #00ffd5;
         }
-
         body.light #terminal {
             color: #00aaff;
         }
-
         .workspace {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(0, 255, 213, 0.15);
@@ -297,46 +257,37 @@
             margin-bottom: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-
         body.light .workspace {
             background: rgba(0, 0, 0, 0.02);
             border: 1px solid rgba(0, 170, 255, 0.2);
         }
-
         .file-tree {
             font-size: 0.9rem;
             color: #ccc;
         }
-
         body.light .file-tree {
             color: #333;
         }
-
         .file-tree ul {
             list-style: none;
             padding-left: 15px;
         }
-
         .file-tree li {
             margin: 5px 0;
         }
-
         .file-tree li.file {
             color: #00ffd5;
             cursor: pointer;
         }
-
         body.light .file-tree li.file {
             color: #00aaff;
         }
-
         .button-group {
             display: flex;
             gap: 5px;
             margin-top: 10px;
             flex-wrap: wrap;
         }
-
         .check-btn, .clear-btn, .check-answer-btn, .restart-btn {
             flex: 1;
             padding: 5px;
@@ -352,44 +303,34 @@
             min-width: 50px;
             transition: background 0.3s;
         }
-
         body.light .check-btn, body.light .clear-btn, body.light .check-answer-btn, body.light .restart-btn {
             border-color: #00aaff;
             color: #00aaff;
         }
-
         .check-btn:hover {
             background: rgba(0, 255, 213, 0.05);
         }
-
         .clear-btn:hover {
             background: rgba(255, 85, 85, 0.05);
         }
-
         .check-answer-btn:hover {
             background: rgba(85, 85, 221, 0.05);
         }
-
         .restart-btn:hover {
             background: rgba(255, 170, 0, 0.05);
         }
-
         body.light .check-btn:hover {
             background: rgba(0, 170, 255, 0.05);
         }
-
         body.light .clear-btn:hover {
             background: rgba(209, 50, 18, 0.05);
         }
-
         body.light .check-answer-btn:hover {
             background: rgba(119, 119, 255, 0.05);
         }
-
         body.light .restart-btn:hover {
             background: rgba(255, 204, 51, 0.05);
         }
-
         .modal-toggle {
             position: absolute;
             top: 5px;
@@ -408,20 +349,16 @@
             backdrop-filter: blur(5px);
             transition: background 0.3s;
         }
-
         body.light .modal-toggle {
             border-color: #00aaff;
             color: #00aaff;
         }
-
         .modal-toggle:hover {
             background: rgba(0, 255, 213, 0.05);
         }
-
         body.light .modal-toggle:hover {
             background: rgba(0, 170, 255, 0.05);
         }
-
         dialog {
             width: 90vw;
             height: 80vh;
@@ -435,22 +372,18 @@
             padding: 10px;
             z-index: 1000;
         }
-
         body.light dialog {
             background: rgba(0, 0, 0, 0.02);
             border: 1px solid rgba(0, 170, 255, 0.2);
         }
-
         dialog::backdrop {
             background: rgba(0, 0, 0, 0.5);
         }
-
         .modal-content {
             height: 100%;
             display: flex;
             flex-direction: column;
         }
-
         .modal-header {
             font-size: 0.9rem;
             color: #00ffd5;
@@ -459,18 +392,15 @@
             border-bottom: 1px solid rgba(0, 255, 213, 0.15);
             backdrop-filter: blur(5px);
         }
-
         body.light .modal-header {
             color: #00aaff;
             background: rgba(0, 0, 0, 0.02);
             border-bottom: 1px solid rgba(0, 170, 255, 0.2);
         }
-
         .modal-body {
             flex: 1;
             padding: 10px;
         }
-
         .modal-body textarea {
             width: 100%;
             height: 100%;
@@ -481,19 +411,15 @@
             color: #fff;
             resize: none;
         }
-
         body.light .modal-body textarea {
             color: #111;
         }
-
         #terminalModal textarea {
             color: #00ffd5;
         }
-
         body.light #terminalModal textarea {
             color: #00aaff;
         }
-
         #completionPrompt {
             position: fixed;
             top: 0;
@@ -503,7 +429,6 @@
             z-index: 9999;
             display: none;
         }
-
         .burst-octagons {
             position: absolute;
             width: 100%;
@@ -511,7 +436,6 @@
             overflow: hidden;
             z-index: 1;
         }
-
         .burst-oct {
             position: absolute;
             font-size: 4rem;
@@ -519,16 +443,13 @@
             color: rgba(79, 195, 247, 0.8);
             animation: pulseburst 4s ease-in-out infinite;
         }
-
         body.light .burst-oct {
             color: rgba(0, 170, 255, 0.8);
         }
-
         @keyframes pulseburst {
             0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
             50% { transform: scale(1.8) rotate(180deg); opacity: 1; }
         }
-
         .burst-message {
             position: absolute;
             top: 50%;
@@ -546,22 +467,18 @@
             z-index: 2;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-
         body.light .burst-message {
             color: rgba(0, 170, 255, 0.9);
             background: rgba(0, 0, 0, 0.02);
             border: 1px solid rgba(0, 170, 255, 0.2);
         }
-
         .burst-message h2 {
             margin-bottom: 0.5rem;
             color: rgba(79, 195, 247, 1);
         }
-
         body.light .burst-message h2 {
             color: rgba(0, 170, 255, 1);
         }
-
         .burst-message button {
             margin-top: 1rem;
             padding: 0.6rem 1.2rem;
@@ -574,20 +491,16 @@
             backdrop-filter: blur(5px);
             transition: background 0.3s;
         }
-
         body.light .burst-message button {
             border-color: rgba(0, 170, 255, 0.9);
             color: rgba(0, 170, 255, 0.9);
         }
-
         .burst-message button:hover {
             background: rgba(79, 195, 247, 0.05);
         }
-
         body.light .burst-message button:hover {
             background: rgba(0, 170, 255, 0.05);
         }
-
         @media (min-width: 768px) {
             .main-content {
                 flex-direction: row;
