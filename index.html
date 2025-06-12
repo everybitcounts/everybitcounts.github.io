@@ -9,139 +9,189 @@
     html, body {
       margin: 0;
       padding: 0;
-      background: radial-gradient(ellipse at top, #0a0a1a 0%, #141436 100%);
-      color: #fff;
+      background: radial-gradient(circle at center, #0a0a1a 0%, #0b0b23 100%);
+      color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-      min-height: 100vh;
+      min-height: 100%;
+      overflow-x: hidden;
     }
+
+    /* Floating Octagon Background */
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .octagon {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: rgba(0, 255, 213, 0.05);
+      clip-path: polygon(
+        30% 0%, 70% 0%, 100% 30%, 100% 70%,
+        70% 100%, 30% 100%, 0% 70%, 0% 30%
+      );
+      animation: float 60s linear infinite;
+    }
+
+    .octagon:nth-child(odd) {
+      background: rgba(0, 255, 213, 0.07);
+    }
+
+    @keyframes float {
+      from { transform: translateY(100vh) rotate(0deg); }
+      to { transform: translateY(-120vh) rotate(360deg); }
+    }
+
+    /* Glassmorphic Container */
     .container {
-      max-width: 730px;
-      margin: 0 auto;
-      padding: 40px 20px 30px 20px;
+      width: 100%;
+      padding: 60px 5vw;
+      box-sizing: border-box;
+      backdrop-filter: blur(18px);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(0,255,213,0.07);
+      border-radius: 24px;
+      box-shadow: 0 0 40px rgba(0, 255, 213, 0.05);
+      position: relative;
+      z-index: 1;
     }
+
     h1 {
-      font-size: 2.5rem;
-      background: linear-gradient(90deg, #00ffd5 30%, #00aaff 100%);
+      font-size: 2.7rem;
+      margin-bottom: 0.5em;
+      background: linear-gradient(90deg, #00ffd5 20%, #00aaff 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 0.2em;
       text-align: center;
     }
+
     h2 {
       color: #00ffd5;
-      font-size: 1.3rem;
-      margin-top: 2.1em;
-      margin-bottom: 0.6em;
+      font-size: 1.4rem;
+      margin-top: 2em;
       text-align: center;
     }
+
     .intro {
-      font-size: 1.15rem;
-      line-height: 1.7;
-      margin: 0 auto 2em auto;
-      max-width: 600px;
+      font-size: 1.1rem;
+      line-height: 1.8;
       text-align: center;
+      margin-bottom: 2em;
     }
+
     .lab-list {
-      margin: 2.5em auto 1.5em auto;
-      max-width: 430px;
-      padding: 1.3em 1em 1em 1em;
-      background: rgba(0, 255, 213, 0.04);
+      background: rgba(0, 255, 213, 0.045);
       border: 1px solid rgba(0,255,213,0.13);
-      border-radius: 18px;
-      box-shadow: 0 0 25px rgba(0, 255, 255, 0.04);
+      border-radius: 16px;
+      padding: 1.4em;
+      box-shadow: 0 0 30px rgba(0, 255, 213, 0.06);
+      margin: 2em auto;
+      max-width: 720px;
     }
+
+    .lab-list b {
+      font-size: 1.08rem;
+      color: #7cffe8;
+    }
+
     .lab-list ul {
-      padding-left: 18px;
-      margin: 0;
-      font-size: 1.05rem;
+      margin-top: 0.8em;
+      padding-left: 20px;
     }
+
     .lab-list li {
-      line-height: 1.7;
-      margin-bottom: 0.5em;
+      margin-bottom: 0.65em;
+      line-height: 1.6;
     }
-    .cloud-icons {
-      display: flex;
-      justify-content: center;
-      gap: 32px;
-      margin: 2.2em 0 1em 0;
-      font-size: 2.7rem;
-    }
-    .cloud-icons span {
-      filter: drop-shadow(0 1px 6px #00ffd5b0);
-    }
+
     a {
       color: #00ffd5;
       text-decoration: none;
-      border-bottom: 1px dotted #00ffd5;
-      transition: border 0.2s;
+      border-bottom: 1px dashed #00ffd5;
+      transition: all 0.2s ease-in-out;
     }
+
     a:hover {
-      border-bottom: 1px solid #00ffd5;
-      color: #fff;
+      color: #ffffff;
+      border-bottom: 1px solid #ffffff;
     }
+
     .footer {
       text-align: center;
-      margin-top: 3em;
+      font-size: 0.95rem;
       color: #7cffe8;
-      font-size: 0.98rem;
-      opacity: 0.7;
+      margin-top: 3em;
+      opacity: 0.6;
     }
-    @media (max-width: 580px) {
-      h1 { font-size: 2.1rem;}
-      .intro { font-size: 1.02rem;}
-      .cloud-icons { font-size: 2.1rem;}
-      .container { padding: 24px 6px 18px 6px; }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2.2rem; }
+      .intro { font-size: 1rem; }
+      .lab-list { padding: 1em; }
     }
   </style>
 </head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-F4WKCGBW90"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<body>
 
-  gtag('config', 'G-F4WKCGBW90');
-</script><body>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-F4WKCGBW90"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-F4WKCGBW90');
+  </script>
+
+  <!-- Floating Octagons Background -->
+  <div class="background">
+    <div class="octagon" style="left:10%; animation-delay: 0s;"></div>
+    <div class="octagon" style="left:30%; animation-delay: 12s;"></div>
+    <div class="octagon" style="left:50%; animation-delay: 24s;"></div>
+    <div class="octagon" style="left:70%; animation-delay: 36s;"></div>
+    <div class="octagon" style="left:90%; animation-delay: 48s;"></div>
+  </div>
+
+  <!-- Main Content -->
   <div class="container">
     <h1>Terraform Academy Interactive Labs</h1>
     <div class="intro">
       <p>
-        Welcome! Terraform Academy Labs provides <b>hands-on, guided, and interactive learning</b> for deploying infrastructure on all major cloud providers—AWS, Azure, GCP, and more. <br><br>
-        Whether you're a beginner or looking to master advanced concepts, our labs walk you through real-world scenarios, letting you learn by doing—not just by reading.
+        Welcome to the Terraform Academy Labs—a place for guided, hands-on cloud training. Launch real infrastructure in your browser using actual Terraform code.
       </p>
     </div>
-    <div class="cloud-icons">
-      <span title="AWS">☁️</span>
-      <span title="Azure">🟦</span>
-      <span title="GCP">🟨</span>
-      <span title="Kubernetes">⎈</span>
-    </div>
+
     <div class="lab-list">
-      <b>What you'll find here:</b>
+      <b>In These Labs:</b>
       <ul>
-        <li>Cloud labs for AWS, Azure, Google Cloud, and more</li>
-        <li>Step-by-step, interactive exercises</li>
-        <li>Immediate feedback and easy resets</li>
-        <li>No cloud account or credit card needed—just your browser</li>
-        <li>Real Terraform code and common scenarios</li>
+        <li>Deploy across AWS, Azure, and Google Cloud</li>
+        <li>Hands-on, step-by-step guided modules</li>
+        <li>No billing, no login—just open and learn</li>
+        <li>Code-first learning with real-time feedback</li>
+        <li>Master common Terraform workflows & patterns</li>
       </ul>
     </div>
-    <h2>Why Interactive Labs?</h2>
+
+    <h2>Why Labs, Not Lectures?</h2>
     <div class="intro">
       <p>
-        Reading about Terraform is a start, but <b>practice is critical</b> for true understanding. Our interactive labs let you <b>experiment safely</b>, make mistakes, and instantly see the results—just like in a real environment.
-        <br><br>
-        Use these labs to prepare for <b>certification, interviews, cloud migrations, or daily DevOps work</b>. Learn at your own pace, as many times as you need.
+        Real understanding comes from doing. These labs let you learn the same way you’ll work—in context, with room to explore, fail, and recover. 
+        Prep for certs, real projects, or onboarding. Learn cloud infrastructure the modern way.
       </p>
     </div>
-    <h2>Get Started</h2>
+
+    <h2>Jump In</h2>
     <div class="intro">
       <p>
-        Explore the lab pages for different cloud providers and topics. New labs are added regularly! <br>
-        <b>Ready?</b> Pick a lab from the menu, or start with <a href="https://everybitcounts.github.io/Interactive-labs/AWS-EC2">your first Terraform resource</a>.
+        Choose a lab from the menu <a href="https://www.terraformacademy.com/interactive-labs">start building your first Terraform resource</a> now.
       </p>
     </div>
+
     <div class="footer">
       &copy; 2025 Terraform Academy Labs
     </div>
