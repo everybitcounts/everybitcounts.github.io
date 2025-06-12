@@ -115,7 +115,7 @@
 </head>
 <body>
 
-  <!-- WebGL Canvas Background -->
+  <!-- Background Canvas -->
   <canvas id="bgCanvas"></canvas>
 
   <!-- Google Analytics -->
@@ -127,7 +127,7 @@
     gtag('config', 'G-F4WKCGBW90');
   </script>
 
-  <!-- Main Content -->
+  <!-- Main Glassmorphic Content -->
   <div class="container">
     <h1>Terraform Academy Interactive Labs</h1>
     <div class="intro">
@@ -167,61 +167,63 @@
     </div>
   </div>
 
-  <!-- WebGL Background Animation Script -->
+  <!-- Floating Polygon Script -->
   <script>
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-    let width, height;
+    document.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById('bgCanvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
 
-    const polygons = Array.from({ length: 20 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      size: 20 + Math.random() * 40,
-      speed: 0.3 + Math.random() * 0.7,
-      angle: Math.random() * Math.PI * 2,
-      rotation: Math.random() * 0.01,
-    }));
+      const polygons = Array.from({ length: 20 }, () => ({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        size: 20 + Math.random() * 40,
+        speed: 0.3 + Math.random() * 0.7,
+        angle: Math.random() * Math.PI * 2,
+        rotation: Math.random() * 0.01,
+      }));
 
-    function resizeCanvas() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    }
-
-    function drawOctagon(x, y, size, angle) {
-      const sides = 8;
-      const step = (Math.PI * 2) / sides;
-      ctx.beginPath();
-      for (let i = 0; i < sides; i++) {
-        const sx = x + Math.cos(angle + step * i) * size;
-        const sy = y + Math.sin(angle + step * i) * size;
-        if (i === 0) ctx.moveTo(sx, sy);
-        else ctx.lineTo(sx, sy);
+      function resizeCanvas() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
       }
-      ctx.closePath();
-      ctx.strokeStyle = 'rgba(0,255,213,0.15)';
-      ctx.fillStyle = 'rgba(0,255,213,0.035)';
-      ctx.lineWidth = 1.1;
-      ctx.fill();
-      ctx.stroke();
-    }
 
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      polygons.forEach(p => {
-        p.y -= p.speed;
-        p.angle += p.rotation;
-        if (p.y + p.size < 0) {
-          p.y = height + p.size;
-          p.x = Math.random() * width;
+      function drawOctagon(x, y, size, angle) {
+        const sides = 8;
+        const step = (Math.PI * 2) / sides;
+        ctx.beginPath();
+        for (let i = 0; i < sides; i++) {
+          const sx = x + Math.cos(angle + step * i) * size;
+          const sy = y + Math.sin(angle + step * i) * size;
+          if (i === 0) ctx.moveTo(sx, sy);
+          else ctx.lineTo(sx, sy);
         }
-        drawOctagon(p.x, p.y, p.size, p.angle);
-      });
-      requestAnimationFrame(animate);
-    }
+        ctx.closePath();
+        ctx.strokeStyle = 'rgba(0,255,213,0.15)';
+        ctx.fillStyle = 'rgba(0,255,213,0.035)';
+        ctx.lineWidth = 1.1;
+        ctx.fill();
+        ctx.stroke();
+      }
 
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    animate();
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        polygons.forEach(p => {
+          p.y -= p.speed;
+          p.angle += p.rotation;
+          if (p.y + p.size < 0) {
+            p.y = height + p.size;
+            p.x = Math.random() * width;
+          }
+          drawOctagon(p.x, p.y, p.size, p.angle);
+        });
+        requestAnimationFrame(animate);
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      animate();
+    });
   </script>
 
 </body>
