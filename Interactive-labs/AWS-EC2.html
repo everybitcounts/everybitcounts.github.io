@@ -7,6 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>AWS EC2 Lab</title>
     <style>
+        /* Core Reset */
         * {
             margin: 0;
             padding: 0;
@@ -22,22 +23,27 @@
             overflow-x: hidden;
             overscroll-behavior: none;
             position: relative;
-            -webkit-text-size-adjust: 100%; /* Prevent font scaling */
-            touch-action: manipulation; /* Prevent double-tap zoom */
+            -webkit-text-size-adjust: 100%;
+            touch-action: manipulation;
         }
 
-        body.light {
-            background: radial-gradient(circle at center, #fff, #ddeeff);
-            color: #111;
+        /* App Mode Theme (iOS-Native) */
+        body.app-mode {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         textarea {
             -webkit-text-size-adjust: 100%;
-            -webkit-user-select: text; /* Allow text selection */
+            -webkit-user-select: text;
             user-select: text;
-            touch-action: pan-y; /* Allow vertical scrolling, prevent pinch zoom */
+            touch-action: pan-y;
         }
 
+        /* Background Octagons */
         .background-octagons {
             position: fixed;
             width: 100%;
@@ -57,8 +63,8 @@
             color: rgba(79, 195, 247, 0.16);
         }
 
-        body.light .background-octagons span {
-            color: rgba(0, 170, 255, 0.2);
+        body.app-mode .background-octagons span {
+            color: rgba(79, 195, 247, 0.2);
         }
 
         @keyframes float1 {
@@ -98,32 +104,7 @@
         .oct3 { animation: float3 50s linear infinite; }
         .oct4 { animation: float4 70s linear infinite; }
 
-        .theme-toggle {
-            padding: 4px 8px;
-            border: 1px solid #00ffd5;
-            background: transparent;
-            color: #00ffd5;
-            border-radius: 4px;
-            backdrop-filter: blur(5px);
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s, border-color 0.3s, color 0.3s;
-            font-size: 0.7rem;
-        }
-
-        body.light .theme-toggle {
-            border-color: #00aaff;
-            color: #00aaff;
-        }
-
-        .theme-toggle:hover {
-            background: rgba(0, 255, 213, 0.05);
-        }
-
-        body.light .theme-toggle:hover {
-            background: rgba(0, 170, 255, 0.05);
-        }
-
+        /* Container */
         .container {
             display: flex;
             flex-direction: column;
@@ -133,6 +114,7 @@
             z-index: 1;
         }
 
+        /* Header (Dev Mode) */
         .header {
             display: flex;
             align-items: center;
@@ -145,9 +127,14 @@
             gap: 10px;
         }
 
-        body.light .header {
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px solid rgba(0, 170, 255, 0.2);
+        /* Header (App Mode) */
+        body.app-mode .header {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: none;
         }
 
         .header h1 {
@@ -158,13 +145,52 @@
             flex: 1;
         }
 
-        body.light .header h1 {
-            background: linear-gradient(to right, #00aaff, #00ffd5);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        body.app-mode .header h1 {
+            background: none;
+            -webkit-text-fill-color: #fff;
+            color: #fff;
+            font-weight: 700;
         }
 
-        .header .instructions-toggle {
+        /* Theme Toggle (Dev Mode) */
+        .theme-toggle {
+            padding: 4px 8px;
+            border: 1px solid #00ffd5;
+            background: transparent;
+            color: #00ffd5;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.7rem;
+            transition: background 0.3s, transform 0.1s ease;
+        }
+
+        /* Theme Toggle (App Mode) */
+        body.app-mode .theme-toggle {
+            border: none;
+            border-radius: 14px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #00ffd5;
+            font-weight: 600;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(0, 255, 213, 0.05);
+        }
+
+        body.app-mode .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.02);
+        }
+
+        /* Instructions Toggle (Dev Mode) */
+        .instructions-toggle {
             background: transparent;
             border: 1px solid #00ffd5;
             color: #00ffd5;
@@ -173,22 +199,33 @@
             border-radius: 4px;
             cursor: pointer;
             backdrop-filter: blur(5px);
-            transition: background 0.3s;
+            transition: background 0.3s, transform 0.1s ease;
         }
 
-        body.light .header .instructions-toggle {
-            border-color: #00aaff;
-            color: #00aaff;
+        /* Instructions Toggle (App Mode) */
+        body.app-mode .instructions-toggle {
+            border: none;
+            border-radius: 14px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #00ffd5;
+            font-weight: 600;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+            transition: background 0.3s ease, transform 0.1s ease;
         }
 
-        .header .instructions-toggle:hover {
+        .instructions-toggle:hover {
             background: rgba(0, 255, 213, 0.05);
         }
 
-        body.light .header .instructions-toggle:hover {
-            background: rgba(0, 170, 255, 0.05);
+        body.app-mode .instructions-toggle:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.02);
         }
 
+        /* Main Content */
         .main-content {
             flex: 1;
             display: flex;
@@ -197,6 +234,7 @@
             padding: 10px 0;
         }
 
+        /* Instructions (Dev Mode) */
         .instructions {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(0, 255, 213, 0.15);
@@ -207,9 +245,14 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        body.light .instructions {
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px solid rgba(0, 170, 255, 0.2);
+        /* Instructions (App Mode) */
+        body.app-mode .instructions {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: none;
         }
 
         .instructions.hidden {
@@ -222,8 +265,9 @@
             margin-bottom: 10px;
         }
 
-        body.light .instructions h2 {
-            color: #00aaff;
+        body.app-mode .instructions h2 {
+            color: #00ffd5;
+            font-weight: 700;
         }
 
         .instructions p {
@@ -231,6 +275,7 @@
             line-height: 1.4;
         }
 
+        /* Editor Terminal */
         .editor-terminal {
             flex: 1;
             display: flex;
@@ -238,6 +283,7 @@
             gap: 10px;
         }
 
+        /* Workspace (Dev Mode) */
         .workspace {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(0, 255, 213, 0.15);
@@ -248,9 +294,14 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        body.light .workspace {
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px solid rgba(0, 170, 255, 0.2);
+        /* Workspace (App Mode) */
+        body.app-mode .workspace {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: none;
         }
 
         .workspace h3 {
@@ -258,8 +309,10 @@
             color: #00ffd5;
             margin-bottom: 10px;
         }
-        body.light .workspace h3 {
-            color: #00aaff;
+
+        body.app-mode .workspace h3 {
+            color: #00ffd5;
+            font-weight: 700;
         }
 
         .file-tree {
@@ -267,8 +320,8 @@
             color: #ccc;
         }
 
-        body.light .file-tree {
-            color: #333;
+        body.app-mode .file-tree {
+            color: #ddd;
         }
 
         .file-tree ul {
@@ -285,10 +338,11 @@
             cursor: pointer;
         }
 
-        body.light .file-tree li.file {
-            color: #00aaff;
+        body.app-mode .file-tree li.file {
+            color: #00ffd5;
         }
 
+        /* Editor/Terminal Sections */
         .editor-section, .terminal-section {
             flex: 1;
             display: flex;
@@ -296,6 +350,7 @@
             position: relative;
         }
 
+        /* Editor/Terminal Headers (Dev Mode) */
         .editor-section h3, .terminal-section h3 {
             font-size: 0.9rem;
             color: #00ffd5;
@@ -305,12 +360,26 @@
             backdrop-filter: blur(5px);
         }
 
-        body.light .editor-section h3, body.light .terminal-section h3 {
-            color: #00aaff;
-            background: rgba(0, 0, 0, 0.02);
-            border-bottom: 1px solid rgba(0, 170, 255, 0.2);
+        /* Editor/Terminal Headers (App Mode) */
+        body.app-mode .editor-section, body.app-mode .terminal-section {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: none;
         }
 
+        body.app-mode .editor-section h3, body.app-mode .terminal-section h3 {
+            color: #00ffd5;
+            font-weight: 700;
+            padding: 0;
+            background: none;
+            border-bottom: none;
+            margin-bottom: 10px;
+        }
+
+        /* Editor/Terminal Textareas (Dev Mode) */
         #editor, #terminal {
             flex: 1;
             background: rgba(255, 255, 255, 0.02);
@@ -325,10 +394,16 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        body.light #editor, body.light #terminal {
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px solid rgba(0, 170, 255, 0.2);
-            color: #111;
+        /* Editor/Terminal Textareas (App Mode) */
+        body.app-mode #editor, body.app-mode #terminal {
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-family: monospace;
+            font-size: 0.85rem;
+            padding: 12px;
+            border: none;
+            box-shadow: none;
         }
 
         #terminal {
@@ -338,10 +413,11 @@
             max-height: 160px;
         }
 
-        body.light #terminal {
-            color: #00aaff;
+        body.app-mode #terminal {
+            color: #00ffd5;
         }
 
+        /* Button Group (Dev Mode) */
         .button-group {
             display: flex;
             gap: 5px;
@@ -349,6 +425,16 @@
             flex-wrap: wrap;
         }
 
+        /* Button Group (App Mode) */
+        body.app-mode .button-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 12px 0;
+        }
+
+        /* Buttons (Dev Mode) */
         .check-btn, .clear-btn, .check-answer-btn, .restart-btn {
             flex: 1;
             padding: 5px;
@@ -365,9 +451,22 @@
             transition: background 0.3s;
         }
 
-        body.light .check-btn, body.light .clear-btn, body.light .check-answer-btn, body.light .restart-btn {
-            border-color: #00aaff;
-            color: #00aaff;
+        /* Buttons (App Mode) */
+        body.app-mode .check-btn, 
+        body.app-mode .clear-btn, 
+        body.app-mode .check-answer-btn, 
+        body.app-mode .restart-btn {
+            border: none;
+            border-radius: 14px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #00ffd5;
+            font-weight: 600;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+            transition: background 0.3s ease, transform 0.1s ease;
+            min-width: 50px;
         }
 
         .check-btn:hover {
@@ -386,22 +485,15 @@
             background: rgba(255, 170, 0, 0.05);
         }
 
-        body.light .check-btn:hover {
-            background: rgba(0, 170, 255, 0.05);
+        body.app-mode .check-btn:hover,
+        body.app-mode .clear-btn:hover,
+        body.app-mode .check-answer-btn:hover,
+        body.app-mode .restart-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.02);
         }
 
-        body.light .clear-btn:hover {
-            background: rgba(209, 50, 18, 0.05);
-        }
-
-        body.light .check-answer-btn:hover {
-            background: rgba(119, 119, 255, 0.05);
-        }
-
-        body.light .restart-btn:hover {
-            background: rgba(255, 204, 51, 0.05);
-        }
-
+        /* Modal Toggle (Dev Mode) */
         .modal-toggle {
             position: absolute;
             top: 5px;
@@ -421,19 +513,32 @@
             transition: background 0.3s;
         }
 
-        body.light .modal-toggle {
-            border-color: #00aaff;
-            color: #00aaff;
+        /* Modal Toggle (App Mode) */
+        body.app-mode .modal-toggle {
+            border: none;
+            border-radius: 14px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #00ffd5;
+            font-weight: 600;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+            transition: background 0.3s ease, transform 0.1s ease;
+            width: 30px;
+            height: 30px;
         }
 
         .modal-toggle:hover {
             background: rgba(0, 255, 213, 0.05);
         }
 
-        body.light .modal-toggle:hover {
-            background: rgba(0, 170, 255, 0.05);
+        body.app-mode .modal-toggle:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.02);
         }
 
+        /* Dialog (Dev Mode) */
         dialog {
             width: 90vw;
             height: 80vh;
@@ -448,9 +553,18 @@
             z-index: 1000;
         }
 
-        body.light dialog {
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px solid rgba(0, 170, 255, 0.2);
+        /* Dialog (App Mode) */
+        body.app-mode dialog {
+            width: 92vw;
+            max-width: 768px;
+            height: 80vh;
+            border: none;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            padding: 20px;
+            color: #fff;
         }
 
         dialog::backdrop {
@@ -463,6 +577,7 @@
             flex-direction: column;
         }
 
+        /* Modal Header (Dev Mode) */
         .modal-header {
             font-size: 0.9rem;
             color: #00ffd5;
@@ -472,40 +587,96 @@
             backdrop-filter: blur(5px);
         }
 
-        body.light .modal-header {
-            color: #00aaff;
-            background: rgba(0, 0, 0, 0.02);
-            border-bottom: 1px solid rgba(0, 170, 255, 0.2);
+        /* Modal Header (App Mode) */
+        body.app-mode .modal-header {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #00ffd5;
+            padding: 0;
+            background: none;
+            border-bottom: none;
         }
 
         .modal-body {
             flex: 1;
             padding: 10px;
+            display: flex;
         }
 
-        .modal-body textarea {
+        .editor-container {
+            display: flex;
             width: 100%;
             height: 100%;
+            background: transparent;
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 4px;
+        }
+
+        body.app-mode .editor-container {
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .line-numbers {
+            width: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            color: #888;
+            font-family: monospace;
+            font-size: 0.9rem;
+            text-align: right;
+            padding: 10px 5px;
+            overflow: hidden;
+            user-select: none;
+            border-right: 1px solid rgba(0, 255, 213, 0.15);
+        }
+
+        body.app-mode .line-numbers {
+            background: rgba(255,255,255,0.05);
+            color: #aaa;
+            font-size: 0.85rem;
+            border-right: none;
+        }
+
+        .line-numbers div {
+            line-height: 1.5em;
+            padding-right: 5px;
+        }
+
+        /* Modal Textarea (Dev Mode) */
+        .modal-body textarea {
+            flex: 1;
             background: transparent;
             border: none;
             font-family: monospace;
             font-size: 0.9rem;
             color: #fff;
             resize: none;
+            padding: 10px;
+            line-height: 1.5em;
+            overflow-y: auto;
         }
 
-        body.light .modal-body textarea {
-            color: #111;
+        /* Modal Textarea (App Mode) */
+        body.app-mode .modal-body textarea {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-family: monospace;
+            font-size: 0.85rem;
+            padding: 12px;
+            border-radius: 12px;
         }
 
         #terminalModal textarea {
             color: #00ffd5;
         }
 
-        body.light #terminalModal textarea {
-            color: #00aaff;
+        body.app-mode #terminalModal textarea {
+            color: #00ffd5;
         }
 
+        /* Completion Prompt */
         #completionPrompt {
             position: fixed;
             top: 0;
@@ -532,8 +703,8 @@
             animation: pulseburst 4s ease-in-out infinite;
         }
 
-        body.light .burst-oct {
-            color: rgba(0, 170, 255, 0.8);
+        body.app-mode .burst-oct {
+            color: rgba(79, 195, 247, 0.8);
         }
 
         @keyframes pulseburst {
@@ -541,6 +712,7 @@
             50% { transform: scale(1.8) rotate(180deg); opacity: 1; }
         }
 
+        /* Burst Message (Dev Mode) */
         .burst-message {
             position: absolute;
             top: 50%;
@@ -559,10 +731,16 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        body.light .burst-message {
-            color: rgba(0, 170, 255, 0.9);
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px solid rgba(0, 170, 255, 0.2);
+        /* Burst Message (App Mode) */
+        body.app-mode .burst-message {
+            border-radius: 20px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(15px);
+            padding: 2rem;
+            text-align: center;
+            color: #00ffd5;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            border: none;
         }
 
         .burst-message h2 {
@@ -570,8 +748,10 @@
             color: rgba(79, 195, 247, 1);
         }
 
-        body.light .burst-message h2 {
-            color: rgba(0, 170, 255, 1);
+        body.app-mode .burst-message h2 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #00ffd5;
         }
 
         .burst-message button {
@@ -587,17 +767,25 @@
             transition: background 0.3s;
         }
 
-        body.light .burst-message button {
-            border-color: rgba(0, 170, 255, 0.9);
-            color: rgba(0, 170, 255, 0.9);
+        body.app-mode .burst-message button {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #00ffd5;
+            font-weight: 600;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease, transform 0.1s ease;
         }
 
         .burst-message button:hover {
             background: rgba(79, 195, 247, 0.05);
         }
 
-        body.light .burst-message button:hover {
-            background: rgba(0, 170, 255, 0.05);
+        body.app-mode .burst-message button:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.02);
         }
 
         @media (min-width: 768px) {
@@ -632,7 +820,7 @@
         <div class="header">
             <button class="instructions-toggle" onclick="hideInstructions()">Hide Instructions</button>
             <h1>AWS EC2 Lab</h1>
-            <button class="theme-toggle" onclick="toggleTheme()">Light Mode</button>
+            <button class="theme-toggle" onclick="toggleTheme()">App Mode</button>
         </div>
         <div class="main-content">
             <div class="instructions" id="instructions">
@@ -680,7 +868,10 @@ Terraform initialized successfully.
         <div class="modal-content">
             <div class="modal-header">Code Editor</div>
             <div class="modal-body">
-                <textarea id="editorModalContent" spellcheck="false"></textarea>
+                <div class="editor-container">
+                    <div class="line-numbers" id="editorLineNumbers"></div>
+                    <textarea id="editorModalContent" spellcheck="false"></textarea>
+                </div>
             </div>
             <button class="modal-toggle" onclick="closeEditorModal()">✕</button>
         </div>
@@ -689,7 +880,10 @@ Terraform initialized successfully.
         <div class="modal-content">
             <div class="modal-header">Terminal</div>
             <div class="modal-body">
-                <textarea id="terminalModalContent" readonly></textarea>
+                <div class="editor-container">
+                    <div class="line-numbers" id="terminalLineNumbers"></div>
+                    <textarea id="terminalModalContent" readonly></textarea>
+                </div>
             </div>
             <button class="modal-toggle" onclick="closeTerminalModal()">✕</button>
         </div>
@@ -718,6 +912,8 @@ Terraform initialized successfully.
         const terminalModal = document.getElementById('terminalModal');
         const editorModalContent = document.getElementById('editorModalContent');
         const terminalModalContent = document.getElementById('terminalModalContent');
+        const editorLineNumbers = document.getElementById('editorLineNumbers');
+        const terminalLineNumbers = document.getElementById('terminalLineNumbers');
         const initialFiles = {
             'provider.tf': `provider "aws" {
   region = "us-east-1"
@@ -740,11 +936,26 @@ resource "aws_subnet" "public" {
   subnet_id     = aws_subnet.public.id
 }`;
 
+        function updateLineNumbers(textarea, lineNumbersDiv) {
+            const lines = textarea.value.split('\n').length;
+            lineNumbersDiv.innerHTML = '';
+            for (let i = 1; i <= Math.max(lines, 1); i++) {
+                const lineDiv = document.createElement('div');
+                lineDiv.textContent = i;
+                lineNumbersDiv.appendChild(lineDiv);
+            }
+        }
+
+        function syncScroll(textarea, lineNumbersDiv) {
+            lineNumbersDiv.scrollTop = textarea.scrollTop;
+        }
+
         function loadFile(filename) {
             editor.value = files[filename];
             editor.dataset.file = filename;
             if (editorModal.open) {
                 editorModalContent.value = editor.value;
+                updateLineNumbers(editorModalContent, editorLineNumbers);
             }
         }
 
@@ -761,6 +972,7 @@ resource "aws_subnet" "public" {
                 terminalOutput += 'Error: Please edit main.tf to add the required resources.';
                 terminal.value = terminalOutput;
                 terminalModalContent.value = terminalOutput;
+                updateLineNumbers(terminalModalContent, terminalLineNumbers);
                 return;
             }
             if (code.includes('aws_instance') && code.includes('ami-0c55b159cbf677470') && code.includes('t2.micro') && code.includes('subnet_id')) {
@@ -773,6 +985,7 @@ resource "aws_subnet" "public" {
             terminalModalContent.value = terminalOutput;
             terminal.scrollTop = terminal.scrollHeight;
             terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
         }
 
         function clearTerminal() {
@@ -781,6 +994,7 @@ resource "aws_subnet" "public" {
             terminalModalContent.value = output;
             terminal.scrollTop = terminal.scrollHeight;
             terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
         }
 
         function checkAnswer() {
@@ -793,6 +1007,8 @@ resource "aws_subnet" "public" {
             terminalModalContent.value = terminal.value;
             terminal.scrollTop = terminal.scrollHeight;
             terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(editorModalContent, editorLineNumbers);
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
         }
 
         function restartLab() {
@@ -802,6 +1018,7 @@ resource "aws_subnet" "public" {
             terminalModalContent.value = terminal.value;
             terminal.scrollTop = terminal.scrollHeight;
             terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
             if (instructions.classList.contains('hidden')) {
                 hideInstructions();
             }
@@ -809,19 +1026,21 @@ resource "aws_subnet" "public" {
             terminalModalContent.value = terminal.value;
             terminal.scrollTop = terminal.scrollHeight;
             terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
             document.getElementById('completionPrompt').style.display = 'none';
         }
 
         function toggleTheme() {
-            document.body.classList.toggle('light');
+            document.body.classList.toggle('app-mode');
             const button = document.querySelector('.theme-toggle');
-            button.textContent = document.body.classList.contains('light') ? 'Dark Mode' : 'Light Mode';
-            localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+            button.textContent = document.body.classList.contains('app-mode') ? 'Dev Mode' : 'App Mode';
+            localStorage.setItem('theme', document.body.classList.contains('app-mode') ? 'app-mode' : 'dev-mode');
         }
 
         function openEditorModal() {
             editorModalContent.value = editor.value;
             editorModal.showModal();
+            updateLineNumbers(editorModalContent, editorLineNumbers);
             editorModalContent.focus();
         }
 
@@ -833,6 +1052,7 @@ resource "aws_subnet" "public" {
         function openTerminalModal() {
             terminalModalContent.value = terminal.value;
             terminalModal.showModal();
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
         }
 
         function closeTerminalModal() {
@@ -843,29 +1063,42 @@ resource "aws_subnet" "public" {
             document.getElementById('completionPrompt').style.display = 'block';
         }
 
+        // Load saved theme
         (function loadTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            if (savedTheme === 'light') {
-                document.body.classList.add('light');
-                document.querySelector('.theme-toggle').textContent = 'Dark Mode';
+            const savedTheme = localStorage.getItem('theme') || 'dev-mode';
+            if (savedTheme === 'app-mode') {
+                document.body.classList.add('app-mode');
+                document.querySelector('.theme-toggle').textContent = 'Dev Mode';
             }
         })();
 
+        // Event Listeners
         editor.addEventListener('input', () => {
             if (editorModal.open) {
                 editorModalContent.value = editor.value;
+                updateLineNumbers(editorModalContent, editorLineNumbers);
             }
         });
 
         editorModalContent.addEventListener('input', () => {
             editor.value = editorModalContent.value;
+            updateLineNumbers(editorModalContent, editorLineNumbers);
+        });
+
+        editorModalContent.addEventListener('scroll', () => {
+            syncScroll(editorModalContent, editorLineNumbers);
         });
 
         const observer = new MutationObserver(() => {
             terminalModalContent.value = terminal.value;
             terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
         });
         observer.observe(terminal, { childList: true, characterData: true, subtree: true });
+
+        terminalModalContent.addEventListener('scroll', () => {
+            syncScroll(terminalModalContent, terminalLineNumbers);
+        });
 
         loadFile('provider.tf');
     </script>
