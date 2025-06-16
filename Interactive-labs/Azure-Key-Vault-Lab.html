@@ -1,0 +1,1100 @@
+<!-- FILE: labs/azure-key-vault.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Azure Key Vault Lab</title>
+    <style>
+        /* Core Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100%;
+            overflow-x: hidden;
+            overscroll-behavior: none;
+            position: relative;
+            -webkit-text-size-adjust: 100%;
+            touch-action: manipulation;
+        }
+
+        /* App Mode Theme (iOS-Native) */
+        body.app-mode {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        textarea {
+            -webkit-text-size-adjust: 100%;
+            -webkit-user-select: text;
+            user-select: text;
+            touch-action: pan-y;
+        }
+
+        /* Background Octagons */
+        .background-octagons {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        .background-octagons span {
+            position: absolute;
+            display: block;
+            font-size: 3rem;
+            color: rgba(79, 195, 247, 0.16);
+        }
+
+        body.app-mode .background-octagons span {
+            color: rgba(79, 195, 247, 0.2);
+        }
+
+        @keyframes float1 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(30px, -40px) rotate(90deg); }
+            50% { transform: translate(-20px, 20px) rotate(180deg); }
+            75% { transform: translate(10px, -10px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        @keyframes float2 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-40px, 30px) rotate(90deg); }
+            50% { transform: translate(25px, -20px) rotate(180deg); }
+            75% { transform: translate(-10px, 10px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        @keyframes float3 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, 20px) rotate(90deg); }
+            50% { transform: translate(-30px, -10px) rotate(180deg); }
+            75% { transform: translate(15px, 25px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        @keyframes float4 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, -30px) rotate(90deg); }
+            50% { transform: translate(-25px, 15px) rotate(180deg); }
+            75% { transform: translate(20px, -20px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        .oct1 { animation: float1 40s linear infinite; }
+        .oct2 { animation: float2 60s linear infinite; }
+        .oct3 { animation: float3 50s linear infinite; }
+        .oct4 { animation: float4 70s linear infinite; }
+
+        /* Container */
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header (Dev Mode) */
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 8px;
+            backdrop-filter: blur(12px);
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+
+        /* Header (App Mode) */
+        body.app-mode .header {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: none;
+        }
+
+        .header h1 {
+            font-size: clamp(0.8rem, 3vw, 1rem); /* Responsive font size */
+            background: linear-gradient(to right, #00ffd5, #66ffe6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            flex: 1;
+            white-space: nowrap; /* Prevent wrapping */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Add ellipsis if too long */
+        }
+
+        body.app-mode .header h1 {
+            background: none;
+            -webkit-text-fill-color: #fff;
+            color: #fff;
+            font-weight: 700;
+            font-size: clamp(0.8rem, 3vw, 1rem); /* Consistent responsive size */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Theme Toggle, Back Button, Instructions Toggle (Dev Mode) */
+        .theme-toggle, .back-button, .instructions-toggle {
+            padding: 4px 8px;
+            border: 1px solid #00ffd5;
+            background: transparent;
+            color: #00ffd5;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.7rem;
+            transition: background 0.3s, transform 0.1s ease;
+        }
+
+        /* Theme Toggle, Back Button, Instructions Toggle (App Mode) */
+        body.app-mode .theme-toggle, body.app-mode .back-button, body.app-mode .instructions-toggle {
+            border: none;
+            border-radius: 14px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #00ffd5;
+            font-weight: 600;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+
+        .theme-toggle:hover, .back-button:hover, .instructions-toggle:hover {
+            background: rgba(0, 255, 213, 0.05);
+        }
+
+        body.app-mode .theme-toggle:hover, body.app-mode .back-button:hover, body.app-mode .instructions-toggle:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.02);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px 0;
+        }
+
+        /* Instructions (Dev Mode) */
+        .instructions {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 8px;
+            backdrop-filter: blur(12px);
+            padding: 15px;
+            display: block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Instructions (App Mode) */
+        body.app-mode .instructions {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: none;
+        }
+
+        .instructions.hidden {
+            display: none;
+        }
+
+        .instructions h2 {
+            font-size: 1.1rem;
+            color: #00ffd5;
+            margin-bottom: 10px;
+        }
+
+        body.app-mode .instructions h2 {
+            color: #00ffd5;
+            font-weight: 700;
+        }
+
+        .instructions p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Editor Terminal */
+        .editor-terminal {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Workspace (Dev Mode) */
+        .workspace {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 8px;
+            backdrop-filter: blur(12px);
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Workspace (App Mode) */
+        body.app-mode .workspace {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: none;
+        }
+
+        .workspace h3 {
+            font-size: 0.9rem;
+            color: #00ffd5;
+            margin-bottom: 10px;
+        }
+
+        body.app-mode .workspace h3 {
+            color: #00ffd5;
+            font-weight: 700;
+        }
+
+        .file-tree {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        body.app-mode .file-tree {
+            color: #ddd;
+        }
+
+        .file-tree ul {
+            list-style: none;
+            padding-left: 15px;
+        }
+
+        .file-tree li {
+            margin: 5px 0;
+        }
+
+        .file-tree li.file {
+            color: #00ffd5;
+            cursor: pointer;
+        }
+
+        body.app-mode .file-tree li.file {
+            color: #00ffd5;
+        }
+
+        /* Editor/Terminal Sections */
+        .editor-section, .terminal-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Editor/Terminal Headers (Dev Mode) */
+        .editor-section h3, .terminal-section h3 {
+            font-size: 0.9rem;
+            color: #00ffd5;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(0, 255, 213, 0.15);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Editor/Terminal Headers (App Mode) */
+        body.app-mode .editor-section, body.app-mode .terminal-section {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            backdrop-filter: blur(15px);
+            border: none;
+        }
+
+        body.app-mode .editor-section h3, body.app-mode .terminal-section h3 {
+            color: #00ffd5;
+            font-weight: 700;
+            padding: 0;
+            background: none;
+            border-bottom: none;
+            margin-bottom: 10px;
+        }
+
+        /* Editor/Terminal Textareas (Dev Mode) */
+        #editor, #terminal {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 4px;
+            backdrop-filter: blur(12px);
+            padding: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #fff;
+            resize: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Editor/Terminal Textareas (App Mode) */
+        body.app-mode #editor, body.app-mode #terminal {
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-family: monospace;
+            font-size: 0.85rem;
+            padding: 12px;
+            border: none;
+            box-shadow: none;
+        }
+
+        #terminal {
+            color: #00ffd5;
+        }
+
+        body.app-mode #terminal {
+            color: #00ffd5;
+        }
+
+        /* Button Group (Dev Mode) */
+        .button-group {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Button Group (App Mode) */
+        body.app-mode .button-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 12px 0;
+        }
+
+        /* Buttons (Dev Mode) */
+        .check-btn, .clear-btn, .check-answer-btn, .restart-btn {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #00ffd5;
+            background: transparent;
+            color: #00ffd5;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            min-width: 50px;
+            transition: background 0.3s;
+        }
+
+        /* Buttons (App Mode) */
+        body.app-mode .check-btn, 
+        body.app-mode .clear-btn, 
+        body.app-mode .check-answer-btn, 
+        body.app-mode .restart-btn {
+            border: none;
+            border-radius: 14px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #00ffd5;
+            font-weight: 600;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+            transition: background 0.3s ease, transform 0.1s ease;
+            min-width: 50px;
+        }
+
+        .check-btn:hover {
+            background: rgba(0, 255, 213, 0.05);
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 85, 85, 0.05);
+        }
+
+        .check-answer-btn:hover {
+            background: rgba(85, 85, 221, 0.05);
+        }
+
+        .restart-btn:hover {
+            background: rgba(255, 170, 0, 0.05);
+        }
+
+        body.app-mode .check-btn:hover,
+        body.app-mode .clear-btn:hover,
+        body.app-mode .check-answer-btn:hover,
+        body.app-mode .restart-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.02);
+        }
+
+        /* Modal Toggle (Dev Mode) */
+        .modal-toggle {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            border: 1px solid #00ffd5;
+            color: #00ffd5;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            transition: background 0.3s;
+        }
+
+        /* Modal Toggle (App Mode) */
+        body.app-mode .modal-toggle {
+            border: none;
+            border-radius: 14px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #00ffd5;
+            font-weight: 600;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+            transition: background 0.3s ease, transform 0.1s ease;
+            width: 30px;
+            height: 30px;
+        }
+
+        .modal-toggle:hover {
+            background: rgba(0, 255, 213, 0.05);
+        }
+
+        body.app-mode .modal-toggle:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: scale(1.02);
+        }
+
+        /* Dialog (Dev Mode) */
+        dialog {
+            width: 90vw;
+            height: 80vh;
+            max-width: 800px;
+            max-height: 600px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 8px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        /* Dialog (App Mode) */
+        body.app-mode dialog {
+            width: 92vw;
+            max-width: 768px;
+            height: 80vh;
+            border: none;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            padding: 20px;
+            color: #fff;
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Modal Header (Dev Mode) */
+        .modal-header {
+            font-size: 0.9rem;
+            color: #00ffd5;
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(0, 255, 213, 0.15);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Modal Header (App Mode) */
+        body.app-mode .modal-header {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #00ffd5;
+            padding: 0;
+            background: none;
+            border-bottom: none;
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 10px;
+            display: flex;
+        }
+
+        .editor-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            border-radius: 4px;
+        }
+
+        body.app-mode .editor-container {
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .line-numbers {
+            width: 40px;
+            background: rgba(255, 255, 255, 0.02);
+            color: #888;
+            font-family: monospace;
+            font-size: 0.9rem;
+            text-align: right;
+            padding: 10px 5px;
+            overflow: hidden;
+            user-select: none;
+            border-right: 1px solid rgba(0, 255, 213, 0.15);
+        }
+
+        body.app-mode .line-numbers {
+            background: rgba(255,255,255,0.05);
+            color: #aaa;
+            font-size: 0.85rem;
+            border-right: none;
+        }
+
+        .line-numbers div {
+            line-height: 1.5em;
+            padding-right: 5px;
+        }
+
+        /* Modal Textarea (Dev Mode) */
+        .modal-body textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #fff;
+            resize: none;
+            padding: 10px;
+            line-height: 1.5em;
+            overflow-y: auto;
+        }
+
+        /* Modal Textarea (App Mode) */
+        body.app-mode .modal-body textarea {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-family: monospace;
+            font-size: 0.85rem;
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        #terminalModal textarea {
+            color: #00ffd5;
+        }
+
+        body.app-mode #terminalModal textarea {
+            color: #00ffd5;
+        }
+
+        /* Completion Prompt */
+        #completionPrompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            display: none;
+        }
+
+        .burst-octagons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none; /* Prevent octagons from blocking clicks */
+        }
+
+        .burst-oct {
+            position: absolute;
+            font-size: 4rem;
+            font-weight: bold;
+            color: rgba(79, 195, 247, 0.8);
+            animation: pulseburst 4s ease-in-out infinite;
+        }
+
+        body.app-mode .burst-oct {
+            color: rgba(79, 195, 247, 0.8);
+        }
+
+        @keyframes pulseburst {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+            50% { transform: scale(1.8) rotate(180deg); opacity: 1; }
+        }
+
+        /* Burst Message (Dev Mode) */
+        .burst-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            color: rgba(79, 195, 247, 0.9);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(0, 255, 213, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            font-weight: bold;
+            text-align: center;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Burst Message (App Mode) */
+        body.app-mode .burst-message {
+            border-radius: 20px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(15px);
+            padding: 2rem;
+            text-align: center;
+            color: #00ffd5;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            border: none;
+            z-index: 2;
+        }
+
+        .burst-message h2 {
+            margin-bottom: 0.5rem;
+            color: rgba(79, 195, 247, 1);
+        }
+
+        body.app-mode .burst-message h2 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #00ffd5;
+        }
+
+        .burst-message button {
+            margin-top: 1rem;
+            padding: 0.6rem 1.2rem;
+            background: transparent;
+            border: 1px solid rgba(79, 195, 247, 0.9);
+            color: rgba(79, 195, 247, 0.9);
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: background 0.3s;
+            z-index: 3; /* Ensure button is clickable */
+        }
+
+        body.app-mode .burst-message button {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #00ffd5;
+            font-weight: 600;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s ease, transform 0.1s ease;
+            z-index: 3; /* Ensure button is clickable */
+        }
+
+        .burst-message button:hover {
+            background: rgba(79, 195, 247, 0.05);
+        }
+
+        body.app-mode .burst-message button:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.02);
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                flex-direction: row;
+            }
+            .instructions {
+                flex: 0 0 30%;
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+            .editor-terminal {
+                flex: 0 0 70%;
+            }
+            .editor-section, .terminal-section {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-octagons">
+        <span class="oct1" style="top:10%; left:10%;">⬡</span>
+        <span class="oct2" style="top:40%; left:70%;">⬡</span>
+        <span class="oct3" style="top:70%; left:30%;">⬡</span>
+        <span class="oct4" style="top:20%; left:80%;">⬡</span>
+        <span class="oct1" style="top:85%; left:15%;">⬡</span>
+        <span class="oct2" style="top:65%; left:90%;">⬡</span>
+        <span class="oct3" style="top:30%; left:50%;">⬡</span>
+    </div>
+    <div class="container">
+        <div class="header">
+            <button class="instructions-toggle" onclick="hideInstructions()">Hide Instructions</button>
+            <h1>Azure Key Vault Lab</h1>
+            <div style="display: flex; gap: 5px;">
+                <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+                <button class="theme-toggle" onclick="toggleTheme()">App Mode</button>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="instructions" id="instructions">
+                <h2>Create a Key Vault in Azure</h2>
+                <p>In the "Code Editor" tab, open the <code>keyvault.tf</code> file.</p>
+                <p>Your task: Add resources to create a Key Vault named <code>my-keyvault</code> in the resource group defined in <code>main.tf</code>. Add a secret named <code>my-secret</code> with the value <code>SecretValue123</code>.</p>
+            </div>
+            <div class="editor-terminal">
+                <div class="workspace">
+                    <h3>GitOps Repository</h3>
+                    <div class="file-tree">
+                        <ul>
+                            <li>📁 /root/learn-terraform-azure-keyvault</li>
+                            <ul>
+                                <li class="file" onclick="loadFile('provider.tf')">📄 provider.tf</li>
+                                <li class="file" onclick="loadFile('main.tf')">📄 main.tf</li>
+                                <li class="file" onclick="loadFile('keyvault.tf')">📄 keyvault.tf</li>
+                            </ul>
+                        </ul>
+                    </div>
+                </div>
+                <div class="editor-section">
+                    <h3>Code Editor</h3>
+                    <button class="modal-toggle" onclick="openEditorModal()">↗</button>
+                    <textarea id="editor" spellcheck="false"></textarea>
+                </div>
+                <div class="terminal-section">
+                    <h3>Terminal</h3>
+                    <button class="modal-toggle" onclick="openTerminalModal()">↗</button>
+                    <textarea id="terminal" readonly>
+Initializing lab environment...
+Terraform initialized successfully.
+                    </textarea>
+                </div>
+            </div>
+        </div>
+        <div class="button-group">
+            <button class="check-btn" onclick="checkCode()">Check</button>
+            <button class="clear-btn" onclick="clearTerminal()">Clear Terminal</button>
+            <button class="check-answer-btn" onclick="checkAnswer()">Check Answer</button>
+            <button class="restart-btn" onclick="restartLab()">Restart</button>
+        </div>
+    </div>
+    <dialog id="editorModal">
+        <div class="modal-content">
+            <div class="modal-header">Code Editor</div>
+            <div class="modal-body">
+                <div class="editor-container">
+                    <div class="line-numbers" id="editorLineNumbers"></div>
+                    <textarea id="editorModalContent" spellcheck="false"></textarea>
+                </div>
+            </div>
+            <button class="modal-toggle" onclick="closeEditorModal()">✕</button>
+        </div>
+    </dialog>
+    <dialog id="terminalModal">
+        <div class="modal-content">
+            <div class="modal-header">Terminal</div>
+            <div class="modal-body">
+                <div class="editor-container">
+                    <div class="line-numbers" id="terminalLineNumbers"></div>
+                    <textarea id="terminalModalContent" readonly></textarea>
+                </div>
+            </div>
+            <button class="modal-toggle" onclick="closeTerminalModal()">✕</button>
+        </div>
+    </dialog>
+    <div id="completionPrompt">
+        <div class="burst-octagons">
+            <span class="burst-oct" style="top:10%; left:20%;">⬡</span>
+            <span class="burst-oct" style="top:30%; left:40%;">⬡</span>
+            <span class="burst-oct" style="top:50%; left:60%;">⬡</span>
+            <span class="burst-oct" style="top:70%; left:80%;">⬡</span>
+            <span class="burst-oct" style="top:20%; left:70%;">⬡</span>
+            <span class="burst-oct" style="top:60%; left:10%;">⬡</span>
+            <span class="burst-oct" style="top:80%; left:40%;">⬡</span>
+        </div>
+        <div class="burst-message">
+            <h2>Nicely Done!</h2>
+            <p>Congrats on completing the Azure Key Vault Lab!</p>
+            <button onclick="restartLab()">Restart</button>
+        </div>
+    </div>
+    <script>
+        const editor = document.getElementById('editor');
+        const terminal = document.getElementById('terminal');
+        const instructions = document.getElementById('instructions');
+        const editorModal = document.getElementById('editorModal');
+        const terminalModal = document.getElementById('terminalModal');
+        const editorModalContent = document.getElementById('editorModalContent');
+        const terminalModalContent = document.getElementById('terminalModalContent');
+        const editorLineNumbers = document.getElementById('editorLineNumbers');
+        const terminalLineNumbers = document.getElementById('terminalLineNumbers');
+        const initialFiles = {
+            'provider.tf': `provider "azurerm" {
+  features {}
+}`,
+            'main.tf': `resource "azurerm_resource_group" "rg" {
+  name     = "my-resource-group"
+  location = "eastus"
+}`,
+            'keyvault.tf': `# Define your Key Vault resources here
+`
+        };
+        let files = {...initialFiles};
+        const solution = `resource "azurerm_key_vault" "my_keyvault" {
+  name                        = "my-keyvault"
+  resource_group_name         = azurerm_resource_group.rg.name
+  location                    = azurerm_resource_group.rg.location
+  enabled_for_disk_encryption = true
+  tenant_id                   = "your-tenant-id"
+  sku_name                    = "standard"
+}
+
+resource "azurerm_key_vault_secret" "my_secret" {
+  name         = "my-secret"
+  value        = "SecretValue123"
+  key_vault_id = azurerm_key_vault.my_keyvault.id
+}`;
+
+        function normalizeCode(code) {
+            // Replace tenant_id content for comparison, but keep the structure
+            const tenantIdRegex = /tenant_id\s*=\s*"[^"]*"/;
+            code = code.replace(tenantIdRegex, 'tenant_id = "DUMMY_TENANT_ID"');
+            return code.replace(/\s+/g, ' ').trim().toLowerCase();
+        }
+
+        function loadFile(filename) {
+            editor.value = files[filename];
+            editor.dataset.file = filename;
+            if (editorModal.open) {
+                editorModalContent.value = editor.value;
+                updateLineNumbers(editorModalContent, editorLineNumbers);
+            }
+        }
+
+        function hideInstructions() {
+            instructions.classList.toggle('hidden');
+            const btn = document.querySelector('.instructions-toggle');
+            btn.textContent = instructions.classList.contains('hidden') ? 'Show Instructions' : 'Hide Instructions';
+        }
+
+        function checkCode() {
+            const code = editor.value.trim();
+            let terminalOutput = terminal.value + '\n\nChecking your code...\n';
+            if (editor.dataset.file !== 'keyvault.tf') {
+                terminalOutput += 'Error: Please edit keyvault.tf to add the required resources.';
+                terminal.value = terminalOutput;
+                terminalModalContent.value = terminalOutput;
+                updateLineNumbers(terminalModalContent, terminalLineNumbers);
+                return;
+            }
+
+            // Normalize both the input code and solution for comparison
+            const normalizedCode = normalizeCode(code);
+            const normalizedSolution = normalizeCode(solution);
+
+            if (normalizedCode === normalizedSolution) {
+                terminalOutput += 'Success! Your Terraform code is correct.\nApplying configuration...\nKey Vault created successfully.';
+                showCompletionPrompt();
+            } else {
+                terminalOutput += 'Error: Your code is incomplete. Ensure the Key Vault is named my-keyvault and includes a secret named my-secret with value SecretValue123.';
+            }
+            terminal.value = terminalOutput;
+            terminalModalContent.value = terminalOutput;
+            terminal.scrollTop = terminal.scrollHeight;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
+        }
+
+        function clearTerminal() {
+            const output = 'Terminal cleared.\nInitializing lab environment...\nTerraform initialized successfully.';
+            terminal.value = output;
+            terminalModalContent.value = output;
+            terminal.scrollTop = terminal.scrollHeight;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
+        }
+
+        function checkAnswer() {
+            if (editor.dataset.file !== 'keyvault.tf') {
+                loadFile('keyvault.tf');
+            }
+            editor.value = solution;
+            editorModalContent.value = solution;
+            terminal.value += '\n\nSolution displayed in the editor.\nYou can now check the code or modify it as needed.';
+            terminalModalContent.value = terminal.value;
+            terminal.scrollTop = terminal.scrollHeight;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(editorModalContent, editorLineNumbers);
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
+        }
+
+        function restartLab() {
+            files = {...initialFiles};
+            loadFile('provider.tf');
+            terminal.value = 'Initializing lab environment...\nTerraform initialized successfully.';
+            terminalModalContent.value = terminal.value;
+            terminal.scrollTop = terminal.scrollHeight;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
+            if (instructions.classList.contains('hidden')) {
+                hideInstructions();
+            }
+            terminal.value += '\n\nLab restarted. All changes have been reset.';
+            terminalModalContent.value = terminal.value;
+            terminal.scrollTop = terminal.scrollHeight;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
+            document.getElementById('completionPrompt').style.display = 'none';
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('app-mode');
+            const button = document.querySelector('.theme-toggle');
+            button.textContent = document.body.classList.contains('app-mode') ? 'Dev Mode' : 'App Mode';
+            localStorage.setItem('theme', document.body.classList.contains('app-mode') ? 'app-mode' : 'dev-mode');
+        }
+
+        function openEditorModal() {
+            editorModalContent.value = editor.value;
+            editorModal.showModal();
+            updateLineNumbers(editorModalContent, editorLineNumbers);
+            editorModalContent.focus();
+        }
+
+        function closeEditorModal() {
+            editor.value = editorModalContent.value;
+            editorModal.close();
+        }
+
+        function openTerminalModal() {
+            terminalModalContent.value = terminal.value;
+            terminalModal.showModal();
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
+        }
+
+        function closeTerminalModal() {
+            terminalModal.close();
+        }
+
+        function showCompletionPrompt() {
+            document.getElementById('completionPrompt').style.display = 'block';
+        }
+
+        function updateLineNumbers(textarea, lineNumbersDiv) {
+            const lines = textarea.value.split('\n').length;
+            lineNumbersDiv.innerHTML = '';
+            for (let i = 1; i <= Math.max(lines, 1); i++) {
+                const lineDiv = document.createElement('div');
+                lineDiv.textContent = i;
+                lineNumbersDiv.appendChild(lineDiv);
+            }
+        }
+
+        function syncScroll(textarea, lineNumbersDiv) {
+            lineNumbersDiv.scrollTop = textarea.scrollTop;
+        }
+
+        // Load saved theme
+        (function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dev-mode';
+            if (savedTheme === 'app-mode') {
+                document.body.classList.add('app-mode');
+                document.querySelector('.theme-toggle').textContent = 'Dev Mode';
+            }
+        })();
+
+        // Event Listeners
+        editor.addEventListener('input', () => {
+            if (editorModal.open) {
+                editorModalContent.value = editor.value;
+                updateLineNumbers(editorModalContent, editorLineNumbers);
+            }
+        });
+
+        editorModalContent.addEventListener('input', () => {
+            editor.value = editorModalContent.value;
+            updateLineNumbers(editorModalContent, editorLineNumbers);
+        });
+
+        editorModalContent.addEventListener('scroll', () => {
+            syncScroll(editorModalContent, editorLineNumbers);
+        });
+
+        const observer = new MutationObserver(() => {
+            terminalModalContent.value = terminal.value;
+            terminalModalContent.scrollTop = terminalModalContent.scrollHeight;
+            updateLineNumbers(terminalModalContent, terminalLineNumbers);
+        });
+        observer.observe(terminal, { childList: true, characterData: true, subtree: true });
+
+        terminalModalContent.addEventListener('scroll', () => {
+            syncScroll(terminalModalContent, terminalLineNumbers);
+        });
+
+        loadFile('provider.tf');
+    </script>
+</body>
+</html>
+<!-- END FILE: labs/azure-key-vault.html -->
