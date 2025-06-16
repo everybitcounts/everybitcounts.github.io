@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Terraform Academy Certification Path</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Terraform Academy - Your Certification Launchpad">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0a0a1a;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      min-height: 100%;
+      overflow-x: hidden;
+    }
+    canvas#bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -2;
+    }
+    .container {
+      width: 100%;
+      padding: 60px 5vw;
+      box-sizing: border-box;
+      backdrop-filter: blur(18px);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(0,255,213,0.07);
+      border-radius: 24px;
+      box-shadow: 0 0 40px rgba(0, 255, 213, 0.05);
+      position: relative;
+      z-index: 1;
+    }
+    h1 {
+      font-size: 2.7rem;
+      margin-bottom: 0.5em;
+      background: linear-gradient(90deg, #00ffd5 20%, #00aaff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+    }
+    h2 {
+      color: #00ffd5;
+      font-size: 1.4rem;
+      margin-top: 2em;
+      text-align: center;
+    }
+    .intro {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      text-align: center;
+      margin-bottom: 2em;
+    }
+    .lab-list {
+      background: rgba(0, 255, 213, 0.045);
+      border: 1px solid rgba(0,255,213,0.13);
+      border-radius: 16px;
+      padding: 1.4em;
+      box-shadow: 0 0 30px rgba(0, 255, 213, 0.06);
+      margin: 2em auto;
+      max-width: 720px;
+    }
+    .lab-list b {
+      font-size: 1.08rem;
+      color: #7cffe8;
+    }
+    .lab-list ul {
+      margin-top: 0.8em;
+      padding-left: 20px;
+    }
+    .lab-list li {
+      margin-bottom: 0.65em;
+      line-height: 1.6;
+    }
+    a {
+      color: #00ffd5;
+      text-decoration: none;
+      border-bottom: 1px dashed #00ffd5;
+      transition: all 0.2s ease-in-out;
+    }
+    a:hover {
+      color: #ffffff;
+      border-bottom: 1px solid #ffffff;
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #7cffe8;
+      margin-top: 3em;
+      opacity: 0.6;
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 2.2rem; }
+      .intro { font-size: 1rem; }
+      .lab-list { padding: 1em; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bgCanvas"></canvas>
+  <div class="container">
+    <h1>Terraform Associate 003 Certification Path</h1>
+
+    <div class="intro">
+      <p>This guide outlines your journey through Terraform Academy’s interactive labs and learning modules aligned with the official HashiCorp Associate 003 exam objectives.</p>
+    </div>
+
+    <h2>Phase 1: Foundations & Core Concepts</h2>
+    <div class="lab-list">
+      <ul>
+        <li><b>Terraform – Getting Started</b></li>
+        <li><b>Terraform HCL 100 Q’s + CLI Labs</b></li>
+        <li><b>AWS EC2 Lab</b> / <b>Azure Resource Lab</b></li>
+      </ul>
+    </div>
+
+    <h2>Phase 2: Provisioning Core Resources</h2>
+    <div class="lab-list">
+      <ul>
+        <li><b>AWS Labs:</b> EC2, VPC, IAM, RDS, Security Groups</li>
+        <li><b>Azure Labs:</b> Resource Groups, VMs, VNets, Storage</li>
+      </ul>
+    </div>
+
+    <h2>Phase 3: Infrastructure Management & State</h2>
+    <div class="lab-list">
+      <ul>
+        <li><b>Terraform Authoring & Operations</b></li>
+        <li><b>CLI Quizzes</b></li>
+      </ul>
+    </div>
+
+    <h2>Phase 4: Modules, Reuse, and Registry</h2>
+    <div class="lab-list">
+      <ul>
+        <li><b>Resource Quizzes x10</b></li>
+        <li>Use of <code>for_each</code>, <code>count</code>, inputs, outputs</li>
+      </ul>
+    </div>
+
+    <h2>Phase 5: Security, Policy, and DevOps</h2>
+    <div class="lab-list">
+      <ul>
+        <li><b>Security Lifecycle Management</b></li>
+        <li><b>Terraform Azure DevOps Practice</b></li>
+      </ul>
+    </div>
+
+    <h2>Phase 6: Scenario-Based Practice</h2>
+    <div class="lab-list">
+      <ul>
+        <li><b>Terraform Associate Practice</b></li>
+        <li><b>Terraform Associate 003</b></li>
+      </ul>
+    </div>
+
+    <h2>Phase 7: Deep Dives from HashiCorp</h2>
+    <div class="lab-list">
+      <ul>
+        <li>Using Terraform with AWS, Azure, Google</li>
+        <li>Cloud lifecycle & infrastructure architecture</li>
+      </ul>
+    </div>
+
+    <h2>Phase 8: Interactive Learning Games</h2>
+    <div class="lab-list">
+      <ul>
+        <li><b>Matchup Games:</b> Terraform, GitOps, Azure DevOps, AWS CLF-C02, Google Cloud</li>
+        <li><b>Sequence Games:</b> Deploy EC2 (GitOps), Build IAM policies, Create VPC, Setup Pipelines</li>
+        <li>Real-time score and timer feedback to reinforce understanding</li>
+        <li>Games are mobile-optimized and integrated into Terraform Academy</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      &copy; 2025 Terraform Academy — Aligned with HashiCorp Certification
+    </div>
+  </div>
+
+  <!-- Background Animation Script -->
+  <script>
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    const polygons = Array.from({ length: 20 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      size: 20 + Math.random() * 40,
+      speed: 0.3 + Math.random() * 0.7,
+      angle: Math.random() * Math.PI * 2,
+      rotation: Math.random() * 0.01,
+    }));
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    function drawOctagon(x, y, size, angle) {
+      const sides = 8;
+      const step = (Math.PI * 2) / sides;
+      ctx.beginPath();
+      for (let i = 0; i < sides; i++) {
+        const sx = x + Math.cos(angle + step * i) * size;
+        const sy = y + Math.sin(angle + step * i) * size;
+        if (i === 0) ctx.moveTo(sx, sy);
+        else ctx.lineTo(sx, sy);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = 'rgba(0,255,213,0.15)';
+      ctx.fillStyle = 'rgba(0,255,213,0.035)';
+      ctx.lineWidth = 1.1;
+      ctx.fill();
+      ctx.stroke();
+    }
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      polygons.forEach(p => {
+        p.y -= p.speed;
+        p.angle += p.rotation;
+        if (p.y + p.size < 0) {
+          p.y = height + p.size;
+          p.x = Math.random() * width;
+        }
+        drawOctagon(p.x, p.y, p.size, p.angle);
+      });
+      requestAnimationFrame(animate);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    animate();
+  </script>
+</body>
+</html>
